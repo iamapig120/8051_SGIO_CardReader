@@ -5,6 +5,7 @@
 #include "rom.h"
 #include "sys.h"
 #include "usb.h"
+#include "usb_cdc.h"
 
 #ifdef MOTOR
 #include "motor.h"
@@ -59,6 +60,7 @@ void main()
   sysLoadConfig();
   SysConfig *cfg = sysGetConfig();
 
+  CDC_InitBaud();
   usbDevInit();
   debounceInit();
   // rgbInit();

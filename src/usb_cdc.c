@@ -1,0 +1,41 @@
+#include "usb_cdc.h"
+#include "ch552.h"
+
+uint8_x  __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE]; // 端点0 OUT&IN缓冲区
+
+// CDC Tx
+__idata uint8_t          CDC_PutCharBuf[CDC_PUTCHARBUF_LEN]; // The buffer for CDC_PutChar
+__idata volatile uint8_t CDC_PutCharBuf_Last  = 0;           // Point to the last char in the buffer
+__idata volatile uint8_t CDC_PutCharBuf_First = 0;           // Point to the first char in the buffer
+__idata volatile uint8_t CDC_Tx_Busy          = 0;
+__idata volatile uint8_t CDC_Tx_Full          = 0;
+
+// CDC Rx
+__idata volatile uint8_t CDC_Rx_Pending = 0; // Number of bytes need to be processed before accepting more USB packets
+__idata volatile uint8_t CDC_Rx_CurPos  = 0;
+
+// CDC configuration
+extern uint8_t UsbConfig;
+uint32_t       CDC_Baud = 0; // The baud rate
+
+void CDC_InitBaud(void)
+{
+  LineCoding[0] = 0x00;
+  LineCoding[1] = 0xE1;
+  LineCoding[2] = 0x00;
+  LineCoding[3] = 0x00;
+  LineCoding[4] = 0x00;
+  LineCoding[5] = 0x00;
+  LineCoding[6] = 0x08;
+}
+
+void CDC_SetBaud(void)
+{
+  *((uint8_t *)&CDC_Baud)     = LineCoding[0];
+  *((uint8_t *)&CDC_Baud + 1) = LineCoding[1];
+  *((uint8_t *)&CDC_Baud + 2) = LineCoding[2];
+  *((uint8_t *)&CDC_Baud + 3) = LineCoding[3];
+
+  if (CDC_Baud > 999999)
+    CDC_Baud = 57600;
+}
