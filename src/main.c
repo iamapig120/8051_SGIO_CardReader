@@ -59,7 +59,7 @@ void main()
   CDC_InitBaud();
   usbDevInit();
   debounceInit();
-  // rgbInit();
+  rgbInit();
 
   EA = 1; // 启用中断
 
@@ -108,32 +108,6 @@ void main()
           {
           // 手柄按钮 及 手柄摇杆
           case GamepadButton:
-
-            //             controllerKeyH = 0;
-            //             controllerKeyL = 0;
-            //             for (j = 0; j < KEY_COUNT; j++)
-            //             {
-            //               if (cfg->keyConfig[j].mode == GamepadButton)
-            //               {
-            //                 if ((activeKey >> j) & 0x01)
-            //                 {
-            //                   controllerKeyH |= (cfg->keyConfig[j].codeLH);
-            //                   controllerKeyL |= (cfg->keyConfig[j].codeLL);
-            //                 }
-            //               }
-            //             }
-
-            //             SetEp1Code(0, 3); // 报表位0设置为3，即游戏手柄
-
-            //             SetEp1Code(1, controllerKeyH);
-            //  包           SetEp1Code(2, controllerKeyL);
-
-            //             SetEp1Code(3, 0x00);
-            //             SetEp1Code(4, 0x00);
-            //             SetEp1Code(5, 0x00);
-            //             SetEp1Code(6, 0x00);
-
-            //             Enp1IntIn(); // 发送 HID1 数据
             break;
           case GamepadButton_Indexed:
 
@@ -150,6 +124,32 @@ void main()
                 }
               }
             }
+
+            if (buffer[0] == 1)
+            {
+              rgbSet(0, 0x0000FF00);
+            }
+            else
+            {
+              rgbSet(0, 0x00FF0000);
+            }
+            if (buffer[29] == 0)
+            {
+              rgbSet(1, 0x0000FF00);
+            }
+            else
+            {
+              rgbSet(1, 0x00FF0000);
+            }
+            if (buffer[30] != 1)
+            {
+              rgbSet(2, 0x0000FF00);
+            }
+            else
+            {
+              rgbSet(2, 0x00FF0000);
+            }
+            rgbPush();
 
             Enp1IntIn(); // 发送 HID1 数据包
             break;

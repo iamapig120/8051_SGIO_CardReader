@@ -1048,7 +1048,7 @@ uint8_t *GetEndpointInBuffer(uint8_t i)
 void Enp1IntIn()
 {
   // memcpy(Ep1Buffer, HIDKey, 64);
-  usbReleaseAll();
+  // usbReleaseAll();
   UEP1_T_LEN = 64;
   UEP1_CTRL  = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK;
 }
