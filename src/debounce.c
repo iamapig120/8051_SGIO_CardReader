@@ -44,7 +44,11 @@ void debounceUpdate() {
   __debounce_pin(4);
   __debounce_pin(5);
 #elif (defined(SIMPAD_NANO_AE) || defined(SIMPAD_NANO))
-      __debounce_pin(3);
+  __debounce_pin(3);
+#elif defined(SEGA_IO_BOARD)
+  __debounce_pin(3);
+  __debounce_pin(4);
+  __debounce_pin(5);
 #endif
 #endif
 #elif defined SIMPAD_TOUCH
@@ -75,6 +79,10 @@ void debounceInit() {
 #elif (defined(SIMPAD_TOUCH))
   __set_pin(3);
   __set_pin(4);
+#elif defined(SEGA_IO_BOARD)
+  __set_pin(3);
+  __set_pin(4);
+  __set_pin(5);
 #endif
 #endif
 #endif
