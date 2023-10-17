@@ -150,7 +150,8 @@ void main()
                 }
               }
             }
- 
+
+            Enp1IntIn(); // 发送 HID1 数据包
             break;
           default:
             break;
