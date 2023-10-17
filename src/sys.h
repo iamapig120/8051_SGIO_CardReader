@@ -1,8 +1,8 @@
 #ifndef __SYS_H
 #define __SYS_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "bsp.h"
 
@@ -18,20 +18,21 @@ void sysTickConfig();
 // uint32_t sysGetTickCount();
 
 uint32_t getChipID();
-uint8_t hexToChar(uint8_t bHex);
+uint8_t  hexToChar(uint8_t bHex);
 
 typedef enum // 按键模式
 {
-    Keyboard = 0x00,      // 键鼠
-    Media = 0x01,              // 媒体
-    Roller = 0x02,             // 滚轮
-    GamepadButton = 0x03,      // 手柄按键
-    Mouse = 0x04,          // 鼠标移动
-    Absolute = 0x05,           // 绝对定位
-    GamepadRocker = 0x06,      // 手柄摇杆
-    MacroPressDown = 0xF0,     // 按下触发一次宏
-    MacroPressContinue = 0xF1, // 按下持续
-    MacroPressSwitch = 0xF2    // 按下启/停
+  Keyboard              = 0x00, // 键鼠
+  Media                 = 0x01, // 媒体
+  Roller                = 0x02, // 滚轮
+  GamepadButton         = 0x03, // 手柄按键
+  Mouse                 = 0x04, // 鼠标移动
+  Absolute              = 0x05, // 绝对定位
+  GamepadRocker         = 0x06, // 手柄摇杆
+  GamepadButton_Indexed = 0xA3, // 手柄摇杆(索引)
+  MacroPressDown        = 0xF0, // 按下触发一次宏
+  MacroPressContinue    = 0xF1, // 按下持续
+  MacroPressSwitch      = 0xF2  // 按下启/停
 } KeyMode;
 
 #ifndef __LED_COLOR_MODE_LIST_
@@ -65,33 +66,33 @@ typedef enum // 按键模式
  */
 typedef struct
 {
-    KeyMode mode;
-    uint8_t codeHH;
-    uint8_t codeHL;
-    uint8_t codeLH;
-    uint8_t codeLL;
-    // uint8_t program[MARCO_MAX];
-    // uint16_t length;
+  KeyMode mode;
+  uint8_t codeHH;
+  uint8_t codeHL;
+  uint8_t codeLH;
+  uint8_t codeLL;
+  // uint8_t program[MARCO_MAX];
+  // uint16_t length;
 } KeyConfig;
 
 typedef enum // 灯光模式
 {
-    AlwaysOn = 0x00,      // 不做管理，常亮
-    PressDown = 0x01,     // 按下才触发
-    PressUp = 0x02,       // 抬起才触发
-    PressContinue = 0x03, // 按下时持续触发
+  AlwaysOn      = 0x00, // 不做管理，常亮
+  PressDown     = 0x01, // 按下才触发
+  PressUp       = 0x02, // 抬起才触发
+  PressContinue = 0x03, // 按下时持续触发
 } LEDTriggerMode;
 
 typedef struct
 { // LED配置结构体
-    // bool marco;
-    uint8_t mode;
-    // uint8_t program[MARCO_MAX];
-    uint8_t value0;
-    uint8_t value1;
-    uint8_t value2;
-    uint8_t bind;
-    LEDTriggerMode trigger;
+  // bool marco;
+  uint8_t mode;
+  // uint8_t program[MARCO_MAX];
+  uint8_t        value0;
+  uint8_t        value1;
+  uint8_t        value2;
+  uint8_t        bind;
+  LEDTriggerMode trigger;
 } LEDConfig;
 
 /**
@@ -99,12 +100,12 @@ typedef struct
  */
 typedef struct
 {
-    KeyConfig keyConfig[KEY_COUNT];
-    LEDConfig ledConfig[LED_COUNT];
+  KeyConfig keyConfig[KEY_COUNT];
+  LEDConfig ledConfig[LED_COUNT];
 } SysConfig;
 
 // uint32_t sysGetRGB(uint16_t color, uint8_t extend);
-void sysLoadConfig();
+void       sysLoadConfig();
 SysConfig *sysGetConfig();
 
 #endif

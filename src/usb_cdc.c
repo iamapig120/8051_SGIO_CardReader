@@ -1,7 +1,7 @@
 #include "usb_cdc.h"
 #include "ch552.h"
 
-uint8_x  __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE]; // 端点0 OUT&IN缓冲区
+uint8_x __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE]; // 端点0 OUT&IN缓冲区
 
 // CDC Tx
 __idata uint8_t          CDC_PutCharBuf[CDC_PUTCHARBUF_LEN]; // The buffer for CDC_PutChar
@@ -38,4 +38,21 @@ void CDC_SetBaud(void)
 
   if (CDC_Baud > 999999)
     CDC_Baud = 57600;
+}
+
+void USB_EP4_IN_cb(void)
+{
+  UEP4_T_LEN = 0; // 预使用发送长度一定要清空
+  if (CDC_Tx_Full)
+  {
+    // Send a zero-length-packet(ZLP) to end this transfer
+    UEP4_CTRL   = UEP4_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // ACK next IN transfer
+    CDC_Tx_Full = 0;
+    // CDC_Tx_Busy remains set until the next ZLP sent to the host
+  }
+  else
+  {
+    UEP4_CTRL   = UEP4_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
+    CDC_Tx_Busy = 0;
+  }
 }

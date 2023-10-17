@@ -3,7 +3,8 @@
 
 #ifndef __MULTI_COMPILE__
 /* 编译目标设置 开始 */
-#define SIMPAD_V2_AE
+#define SEGA_IO_BOARD
+//#define SIMPAD_V2_AE
 //#define SIMPAD_NANO_AE
 //#define SIM_KEY
 //#define SIMPAD_V2
@@ -13,9 +14,9 @@
 #endif
 
 #define ROM_VERSION_YEAR_H  0x20
-#define ROM_VERSION_YEAR_L  0x21
-#define ROM_VERSION_MONTH   0x01
-#define ROM_VERSION_DATE    0x09
+#define ROM_VERSION_YEAR_L  0x23
+#define ROM_VERSION_MONTH   0x10
+#define ROM_VERSION_DATE    0x17
 
 /* 特性支持列表 */
 #ifndef __FEATURE_HARDWARE_LIST_
@@ -99,7 +100,20 @@ __sbit  __at (0xB7) P37;
 #define FLASH_SIZE 0x80
 
 /* 板级接口定义，需要注意的是，按键需定义为BTx */
-#if defined(SIMPAD_V2_AE)
+#if defined(SEGA_IO_BOARD)
+    #define BT1 P33
+    #define BT2 P32
+    #define BT3 P34
+    #define BT4 P31
+    #define BT5 P30
+    #define KEY_COUNT 5
+    #define LED P12
+    #define LED_COUNT 4
+
+    #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_GAMEPAD // 特性支持，高8位
+    #define FEATURE_NORMAL FEATURE_EXTEND // 特性支持，低8位
+    
+#elif defined(SIMPAD_V2_AE)
     #define BT1 P33
     #define BT2 P32
     #define BT3 P34
@@ -180,9 +194,19 @@ __sbit  __at (0xB7) P37;
     #define HAS_LED
 #endif
 
-#define VENDOR_ID_H 0x80
-#define VENDOR_ID_L 0x88
-
+#if defined(SEGA_IO_BOARD)
+  #define VENDOR_ID_H 0x0C
+  #define VENDOR_ID_L 0xA3
+  #define PRODUCT_ID_H 0x00
+  #define PRODUCT_ID_L 0x21
+  #define PRODUCT_BCD_H 0x02
+  #define PRODUCT_BCD_L 0x00
+#else
+  #define VENDOR_ID_H 0x80
+  #define VENDOR_ID_L 0x88
+  #define PRODUCT_BCD_H 0x02
+  #define PRODUCT_BCD_L 0x02
+#endif
 /*
  * 00 01 SimPad v2
  * 00 02 SimPad v2 - Extra
@@ -213,9 +237,6 @@ __sbit  __at (0xB7) P37;
 #elif defined(SIMPAD_NANO)
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x04
-#else
-  #define PRODUCT_ID_H 0x00
-  #define PRODUCT_ID_L 0x00
 #endif
 
 #define DEVICE_INFO_ARRAY [ 0x00,               0x00,               PRODUCT_ID_H,       PRODUCT_ID_L,        \

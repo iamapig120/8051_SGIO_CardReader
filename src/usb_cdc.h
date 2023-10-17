@@ -25,7 +25,7 @@
 
 #define CDC_FLAG_NOSTOP 0x80
 
-#define LINECODING_ADDR 0x20
+#define LINECODING_ADDR 0x0200
 #define LINECODING_SIZE 7
 
 extern __xdata __at(LINECODING_ADDR) uint8_t LineCoding[]; // 端点0 OUT&IN缓冲区
@@ -37,5 +37,7 @@ void CDC_InitBaud(void);
 void CDC_SetBaud(void);
 void CDC_USB_Poll(void);
 void CDC_UART_Poll(void);
+
+void USB_EP4_IN_cb(void);
 
 #endif

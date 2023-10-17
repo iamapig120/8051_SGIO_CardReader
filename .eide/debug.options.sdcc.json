@@ -14,14 +14,10 @@
     ],
     "global": {
         "device": "mcs51",
-        "optimize-type": "speed",
-        "use-non-free": false,
+        "optimize-type": "balanced",
         "device-options": {
             "mcs51": [
                 "--model-small",
-                "--iram-size 256",
-                "--code-size 0x3000",
-                "--xram-size 1024",
                 "--opt-code-size"
             ]
         }
@@ -34,6 +30,6 @@
     "linker": {
         "$mainFileName": "main",
         "output-format": "hex",
-        "misc-controls": "--xram-loc 0x0000"
+        "misc-controls": "--xram-loc 0x0208 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x01F8"
     }
 }
