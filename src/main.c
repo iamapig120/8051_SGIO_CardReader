@@ -6,6 +6,9 @@
 #include "sys.h"
 #include "usb.h"
 #include "usb_cdc.h"
+#include "usb_sega_io.h"
+
+#include <string.h>
 
 #ifdef MOTOR
 #include "motor.h"
@@ -38,6 +41,7 @@ uint8_t controllerKeyH = 0, controllerKeyL = 0;
 void main()
 {
   uint8_t  i, j;
+  uint16_t timer = 0;
   uint8_t *buffer;
 
   sysClockConfig();
@@ -66,7 +70,8 @@ void main()
   delay_ms(100);
 
   usbReleaseAll();
-  requestHIDData();
+  io4Init();
+  // requestHIDData();
 
   sysTickConfig();
 
@@ -79,7 +84,16 @@ void main()
       motorUpdate();
 #endif
       debounceUpdate();
-      // rgbPush();
+      if (timer == 0)
+      {
+        timer = 0x0400;
+        Enp1IntIn();
+        if ((timer & 0x00FF) == 0x0000)
+        {
+          rgbPush();
+        }
+      }
+      timer--;
     }
 
     activeKey = 0;
@@ -103,7 +117,7 @@ void main()
             activeMotor(5000);
           }
 #endif
-          usbReleaseAll();
+          // usbReleaseAll();
           switch (cfg->keyConfig[i].mode)
           {
           // 手柄按钮 及 手柄摇杆
@@ -114,42 +128,22 @@ void main()
             buffer    = GetEndpointInBuffer(1);
             buffer[0] = 1;
 
+            dataForUpload = (DataUpload *)(&(buffer[1]));
+            memset(dataForUpload->buttons, 0x00, 4);
+
             for (j = 0; j < KEY_COUNT; j++)
             {
               if (cfg->keyConfig[j].mode == GamepadButton_Indexed)
               {
                 if ((activeKey >> j) & 0x01)
                 {
-                  (buffer[29 + cfg->keyConfig[j].codeLH]) |= (cfg->keyConfig[j].codeLL);
+                  (dataForUpload->buttons[cfg->keyConfig[j].codeLH]) |= (cfg->keyConfig[j].codeLL);
                 }
               }
             }
 
-            if (buffer[0] == 1)
-            {
-              rgbSet(0, 0x0000FF00);
-            }
-            else
-            {
-              rgbSet(0, 0x00FF0000);
-            }
-            if (buffer[29] == 0)
-            {
-              rgbSet(1, 0x0000FF00);
-            }
-            else
-            {
-              rgbSet(1, 0x00FF0000);
-            }
-            if (buffer[30] != 1)
-            {
-              rgbSet(2, 0x0000FF00);
-            }
-            else
-            {
-              rgbSet(2, 0x00FF0000);
-            }
-            rgbPush();
+            dataForUpload->buttons[3] ^= 0x80; // Lside取反
+            dataForUpload->buttons[1] ^= 0x40; // Rside取反
 
             Enp1IntIn(); // 发送 HID1 数据包
             break;
@@ -159,6 +153,12 @@ void main()
         }
       }
       prevKey = activeKey;
+    }
+
+    if (Ep1RequestReplay)
+    {
+      Ep1RequestReplay = 0;
+      Enp1IntIn();
     }
   }
 }

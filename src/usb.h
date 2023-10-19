@@ -22,9 +22,11 @@ void Enp1IntIn();                          // 上传按键数据
 
 // uint8_t getHIDData(uint8_t index);              // 从HID接收缓冲中读取一个字节
 // void setHIDData(uint8_t index, uint8_t data);   // 设置HID发送缓冲区对应偏移的数据
-__bit hasHIDData();                             // 是否有数据下发
-void requestHIDData();                          // 请求数据下发
-void pushHIDData();                             // 将HID发送缓冲区内的数据上传
-uint8_t* fetchHIDData();                        // 获取HID接收缓冲区的数据
+// __bit hasHIDData();                             // 是否有数据下发
+// void requestHIDData();                          // 请求数据下发
+// void pushHIDData();                             // 将HID发送缓冲区内的数据上传
+// uint8_t* fetchHIDData();                        // 获取HID接收缓冲区的数据
+
+extern uint8_t Ep1RequestReplay;
 
 #endif

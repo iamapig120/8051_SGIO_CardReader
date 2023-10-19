@@ -25,10 +25,11 @@
 
 #define CDC_FLAG_NOSTOP 0x80
 
-#define LINECODING_ADDR 0x0200
+#define LINECODING_ADDR 0x0240
 #define LINECODING_SIZE 7
 
-extern __xdata __at(LINECODING_ADDR) uint8_t LineCoding[]; // 端点0 OUT&IN缓冲区
+//初始化波特率为57600，1停止位，无校验，8数据位。
+extern __xdata __at(LINECODING_ADDR) uint8_t LineCoding[];
 extern uint32_t CDC_Baud;
 
 #define CDC_PUTCHARBUF_LEN 64

@@ -38,7 +38,8 @@ void debounceUpdate() {
 #if defined(SIM_KEY)
   __debounce_pin(1);
 #else
-  __debounce_pin(1) __debounce_pin(2)
+  __debounce_pin(1);
+  __debounce_pin(2);
 #if (defined(SIMPAD_V2_AE) || defined(SIMPAD_V2))
   __debounce_pin(3);
   __debounce_pin(4);

@@ -101,11 +101,11 @@ __sbit  __at (0xB7) P37;
 
 /* 板级接口定义，需要注意的是，按键需定义为BTx */
 #if defined(SEGA_IO_BOARD)
-    #define BT1 P33
-    #define BT2 P32
+    #define BT1 P30
+    #define BT2 P31
     #define BT3 P34
-    #define BT4 P31
-    #define BT5 P30
+    #define BT4 P32
+    #define BT5 P33
     #define KEY_COUNT 5
     #define LED P12
     #define LED_COUNT 4
@@ -199,6 +199,7 @@ __sbit  __at (0xB7) P37;
   #define VENDOR_ID_L 0xA3
   #define PRODUCT_ID_H 0x00
   #define PRODUCT_ID_L 0x21
+
   #define PRODUCT_BCD_H 0x02
   #define PRODUCT_BCD_L 0x00
 #else

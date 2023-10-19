@@ -1,7 +1,8 @@
 #include "usb_cdc.h"
 #include "ch552.h"
 
-uint8_x __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE]; // 端点0 OUT&IN缓冲区
+//初始化波特率为57600，1停止位，无校验，8数据位。
+uint8_x __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE];
 
 // CDC Tx
 __idata uint8_t          CDC_PutCharBuf[CDC_PUTCHARBUF_LEN]; // The buffer for CDC_PutChar
