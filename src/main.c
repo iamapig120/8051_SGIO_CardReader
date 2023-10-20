@@ -88,6 +88,10 @@ void main()
       {
         timer = 0x0400;
         Enp1IntIn();
+
+        // CDC_PutString("Timer Update.");
+        // CDC_USB_Poll();
+
         if ((timer & 0x00FF) == 0x0000)
         {
           rgbPush();
@@ -125,7 +129,7 @@ void main()
             break;
           case GamepadButton_Indexed:
 
-            buffer    = GetEndpointInBuffer(1);
+            buffer    = EP1_IN_BUF;
             buffer[0] = 1;
 
             dataForUpload = (DataUpload *)(&(buffer[1]));

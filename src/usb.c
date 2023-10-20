@@ -491,10 +491,6 @@ uint16_i SetupLen;            // 包长度
 uint8_i  SetupReq, UsbConfig; // FLAG,
 uint8_t *pDescr;              // USB配置标志
 
-uint32_t ledData;
-
-uint8_t Ep1RequestReplay = 0;
-
 volatile __bit HIDIN = 0;
 #define UsbSetupBuf ((PUSB_SETUP_REQ)Ep0Buffer)
 
@@ -514,10 +510,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
       UEP4_CTRL ^= bUEP_R_TOG; // 手动翻转
       break;
     case UIS_TOKEN_IN | 4: // endpoint 4# 中断端点上传
-      if (U_TOG_OK)
-      {
-        USB_EP4_IN_cb();
-      }
+      USB_EP4_IN_cb();
       UEP4_CTRL ^= bUEP_T_TOG; // 手动翻转
       break;
     case UIS_TOKEN_OUT | 3: // endpoint 3# 中断端点下传
@@ -539,68 +532,18 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
     case UIS_TOKEN_OUT | 2: // endpoint 2# 中断端点下传
       if (U_TOG_OK)
       {
-        len = USB_RX_LEN;
+        USB_EP2_OUT_cb();
       }
       break;
-    case UIS_TOKEN_IN | 2:                                      // endpoint 2# 中断端点上传
-      UEP2_T_LEN = 0;                                           // 预使用发送长度一定要清空
-      UEP2_CTRL  = UEP2_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK; // 默认应答NAK
+    case UIS_TOKEN_IN | 2: // endpoint 2# 中断端点上传
+      USB_EP2_IN_cb();
       break;
     case UIS_TOKEN_OUT | 1: // endpoint 1# 中断端点下传
-      if (U_TOG_OK)
-      {
-        // len = USB_RX_LEN;
-        UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
-
-        if (Ep1Buffer[0] == 0x10)
-        {
-          dataReceive   = (DataReceive *)(&(Ep1Buffer[1]));
-          dataForUpload = (DataUpload *)(&(Ep1Buffer[65]));
-          switch (dataReceive->command)
-          {
-          case SET_COMM_TIMEOUT:
-            dataForUpload->systemStatus = 0x30;
-            break;
-          case SET_SAMPLING_COUNT:
-            dataForUpload->systemStatus = 0x30;
-            break;
-          case CLEAR_BOARD_STATUS:
-            dataForUpload->systemStatus = 0x00;
-
-            dataForUpload->coin[0].count     = 0;
-            dataForUpload->coin[0].condition = NORMAL;
-            dataForUpload->coin[1].count     = 0;
-            dataForUpload->coin[1].condition = NORMAL;
-
-            break;
-          case SET_GENERAL_OUTPUT:
-            ledData = (uint32_t)(dataReceive->payload[0]) << 16 | (uint32_t)(dataReceive->payload[1]) << 8 | dataReceive->payload[2];
-            for (len = 0; len < 3; len++)
-            {
-              // Left1, Left2, Left3, Right1, Right2, Right3
-              rgbSet(len,
-                  (((ledData >> bitPosMap[9 + len * 3]) & 1) ? 0xFF0000 : 0x00000000) |
-                      (((ledData >> bitPosMap[9 + len * 3 + 1]) & 1) ? 0x00FF00 : 0x00000000) |
-                      (((ledData >> bitPosMap[9 + len * 3 + 2]) & 1) ? 0x000000FF : 0x00000000)); // r
-              // rgbSet(len + 3,
-              //     (((ledData >> bitPosMap[len * 3]) & 1) ? 0xFF0000 : 0x00000000) |
-              //         (((ledData >> bitPosMap[len * 3 + 1]) & 1) ? 0x00FF00 : 0x00000000) |
-              //         (((ledData >> bitPosMap[len * 3 + 2]) & 1) ? 0x000000FF : 0x00000000)); // l
-            }
-            break;
-          default:
-            break;
-          }
-          Ep1RequestReplay = 1;
-        }
-
-        UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
-      }
+      USB_EP1_OUT_cb();
       break;
     case UIS_TOKEN_IN | 1:                                      // endpoint 1# 中断端点上传
       UEP1_T_LEN = 0;                                           // 预使用发送长度一定要清空
-      UEP1_CTRL  = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK; // 默认应答NAK
-      // FLAG = 1;                                                               /*传输完成标志*/
+      UEP1_CTRL  = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK; // 默认应答NAK                                                             /*传输完成标志*/
       break;
     case UIS_TOKEN_SETUP | 0: // endpoint 0# SETUP
       len = USB_RX_LEN;
@@ -953,8 +896,19 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
       }
       break;
     case UIS_TOKEN_OUT | 0: // endpoint 0# OUT
+      len = USB_RX_LEN;
       switch (SetupReq)
       {
+      case SET_LINE_CODING:
+        if (U_TOG_OK)
+        {
+          memcpy(LineCoding, UsbSetupBuf, USB_RX_LEN);
+          CDC_SetBaud();
+
+          UEP0_T_LEN = 0;
+          UEP0_CTRL |= UEP_R_RES_ACK | UEP_T_RES_ACK; // 准备上传0包
+        }
+        break;
       default:
         UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK; // 准备下一控制传输
         break;
@@ -972,7 +926,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
     UEP1_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
     UEP2_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
     UEP3_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
-    //    UEP4_CTRL    = UEP_R_RES_ACK | UEP_T_RES_NAK;
+    UEP4_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
     USB_DEV_AD   = 0x00;
     UIF_SUSPEND  = 0;
     UIF_TRANSFER = 0;
@@ -1040,9 +994,8 @@ void usbDevInit()
   UEP3_DMA   = (uint16_t)(&Ep3Buffer[0]);                               // 端点3数据传输地址
   UEP2_3_MOD = UEP2_3_MOD & ~bUEP3_BUF_MOD | bUEP3_RX_EN | bUEP3_TX_EN; // 端点3收发使能 128字节缓冲区
   UEP3_CTRL  = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;           // 端点3自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
-
-  //  UEP4_1_MOD = UEP4_1_MOD & (bUEP4_RX_EN | bUEP4_TX_EN);                // 端点4收发使能 128字节缓冲区
-  //  UEP4_CTRL  = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
+  UEP4_1_MOD = UEP4_1_MOD & (bUEP4_RX_EN | bUEP4_TX_EN);                // 端点4收发使能 128字节缓冲区
+  UEP4_CTRL   = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
 
   USB_DEV_AD = 0x00;
   USB_CTRL |= bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN; // 启动USB设备及DMA，在中断期间中断标志未清除前自动返回NAK
@@ -1056,7 +1009,7 @@ void usbDevInit()
   UEP1_T_LEN = 0;
   UEP2_T_LEN = 0;
   UEP3_T_LEN = 0;
-  //  UEP4_T_LEN = 0;
+  UEP4_T_LEN = 0;
 
   usbSerialDescInit();
 
@@ -1106,32 +1059,32 @@ void usbReleaseAll()
   // memset(&Ep4BufferIn[0], 0x04, 64);
 }
 
-uint8_t *GetEndpointInBuffer(uint8_t i)
-{
-  switch (i)
-  {
-  case 1:
-    return &Ep1Buffer[64];
-    break;
-  case 2:
-    return &Ep2Buffer[64];
-    break;
-  case 3:
-    return &Ep3Buffer[64];
-    break;
-  case 4:
-    return &Ep4BufferIn[0];
-    break;
-  default:
-    return 0;
-    break;
-  }
-}
+// uint8_t *GetEndpointInBuffer(uint8_t i)
+// {
+//   switch (i)
+//   {
+//   case 1:
+//     return &Ep1Buffer[64];
+//     break;
+//   case 2:
+//     return &Ep2Buffer[64];
+//     break;
+//   case 3:
+//     return &Ep3Buffer[64];
+//     break;
+//   case 4:
+//     return &Ep4BufferIn[0];
+//     break;
+//   default:
+//     return 0;
+//     break;
+//   }
+// }
 
-uint8_t getHIDData(uint8_t index)
-{
-  // return HIDInput[index];
-}
+// uint8_t getHIDData(uint8_t index)
+// {
+//   // return HIDInput[index];
+// }
 
 // void setHIDData(uint8_t index, uint8_t data)
 // {

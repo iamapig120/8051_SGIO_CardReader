@@ -52,4 +52,8 @@ extern uint8_c bitPosMap[0x12];
 extern DataReceive *dataReceive;
 extern DataUpload  *dataForUpload;
 
+extern uint8_t Ep1RequestReplay;
+
+void USB_EP1_OUT_cb(void);
+
 #endif
