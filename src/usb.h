@@ -18,9 +18,9 @@ void Enp1IntIn(); // 上传按键数据
 #define ENDP3_BUFFER_SIZE 64 // 端点3 缓冲区大小；HID 自定义设备数据缓冲大小
 #define ENDP4_BUFFER_SIZE 64 // 端点4 缓冲区大小；CDC 设备数据缓冲大小
 
-extern __xdata __at(0x0000) uint8_t Ep0Buffer[];   
-extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep4BufferOut[];                                                                          // 端点4 OUT缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) uint8_t Ep4BufferIn[];                                                       // 端点4 IN缓冲区
+extern __xdata __at(0x0000) uint8_t Ep0Buffer[];                                                                                    // 端点0 OUT&IN缓冲区
+extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep4BufferOut[];                                                                      // 端点4 OUT缓冲区
+extern __xdata __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) uint8_t Ep4BufferIn[];                                                   // 端点4 IN缓冲区
 extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE) uint8_t Ep1Buffer[];                                                 // 端点1 OUT&IN缓冲区
 extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) uint8_t Ep2Buffer[];                         // 端点2 OUT&IN缓冲区
 extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) uint8_t Ep3Buffer[]; // 端点3 OUT&IN缓冲区

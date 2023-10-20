@@ -468,8 +468,8 @@ uint8_x usbSerialDesc[] = {
 const uint8_c usbCfgStrDesc[] = {0x08, USB_DESCR_TYP_STRING, 'U', 0, 'S', 0, 'B', 0};
 const uint8_c SgioStrDesc[]   = {0xBC, USB_DESCR_TYP_STRING, 'I', 0, '/', 0, 'O', 0, ' ', 0, 'C', 0, 'O', 0, 'N', 0, 'T', 0, 'R', 0, 'O', 0, 'L', 0, ' ', 0, 'B', 0, 'D', 0, ';', 0, '1', 0, '5', 0, '2', 0, '5', 0, '7', 0, ';', 0, '0', 0, '1', 0, ';', 0, '9', 0, '0', 0, ';', 0, '1', 0, '8', 0, '3', 0, '1', 0, ';', 0, '6', 0, '6', 0, '7', 0, '9', 0, 'A', 0, ';', 0, '0', 0, '0', 0, ';', 0, 'G', 0, 'O', 0, 'U', 0, 'T', 0, '=', 0, '1', 0, '4', 0, '_', 0, 'A', 0, 'D', 0, 'I', 0, 'N', 0, '=', 0, '8', 0, ',', 0, 'E', 0, '_', 0, 'R', 0, 'O', 0, 'T', 0, 'I', 0, 'N', 0, '=', 0, '4', 0, '_', 0, 'C', 0, 'O', 0, 'I', 0, 'N', 0, 'I', 0, 'N', 0, '=', 0, '2', 0, '_', 0, 'S', 0, 'W', 0, 'I', 0, 'N', 0, '=', 0, '2', 0, ',', 0, 'E', 0, '_', 0, 'U', 0, 'Q', 0, '1', 0, '=', 0, '4', 0, '1', 0, ',', 0, '6', 0, ';', 0};
 // const uint8_c usbMseStrDesc[] = {0x08, USB_DESCR_TYP_STRING, 'M', 0, 's', 0, 'e', 0};
-const uint8_c Com1StrDesc[] = {0x22, USB_DESCR_TYP_STRING, 'C', 0, 'a', 0, 'r', 0, 'd', 0, ' ', 0, 'R', 0, 'e', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, '3', 0};
-const uint8_c Com2StrDesc[] = {0x1E, USB_DESCR_TYP_STRING, 'L', 0, 'E', 0, 'D', 0, ' ', 0, 'B', 0, 'o', 0, 'a', 0, 'r', 0, 'd', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, '3', 0};
+const uint8_c Com1StrDesc[] = {0x1E, USB_DESCR_TYP_STRING, 'L', 0, 'E', 0, 'D', 0, ' ', 0, 'B', 0, 'o', 0, 'a', 0, 'r', 0, 'd', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, '3', 0};
+const uint8_c Com2StrDesc[] = {0x22, USB_DESCR_TYP_STRING, 'C', 0, 'a', 0, 'r', 0, 'd', 0, ' ', 0, 'R', 0, 'e', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, '1', 0};
 #endif
 
 uint8_x HIDMouse[4] = {0}; // 鼠标数据
@@ -994,8 +994,8 @@ void usbDevInit()
   UEP3_DMA   = (uint16_t)(&Ep3Buffer[0]);                               // 端点3数据传输地址
   UEP2_3_MOD = UEP2_3_MOD & ~bUEP3_BUF_MOD | bUEP3_RX_EN | bUEP3_TX_EN; // 端点3收发使能 128字节缓冲区
   UEP3_CTRL  = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;           // 端点3自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
-  UEP4_1_MOD = UEP4_1_MOD & (bUEP4_RX_EN | bUEP4_TX_EN);                // 端点4收发使能 128字节缓冲区
-  UEP4_CTRL   = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
+  UEP4_1_MOD = UEP4_1_MOD | bUEP4_RX_EN | bUEP4_TX_EN;                // 端点4收发使能 128字节缓冲区
+  UEP4_CTRL  = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
 
   USB_DEV_AD = 0x00;
   USB_CTRL |= bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN; // 启动USB设备及DMA，在中断期间中断标志未清除前自动返回NAK
