@@ -2,6 +2,7 @@
 #define __USB_CDC_H
 
 #include "ch552.h"
+#include "comio.h"
 
 // CDC bRequests:
 // bmRequestType = 0xA1
@@ -11,17 +12,6 @@
 #define SET_LINE_CODING 0X20        // Configures DTE rate, stop-bits, parity, and number-of-character
 #define SET_CONTROL_LINE_STATE 0X22 // This request generates RS-232/V.24 style control signals.
 #define SEND_BREAK 0x23
-
-// CDC Rx state machine
-#define CDC_STATE_IDLE 0
-#define CDC_STATE_I2C_TXSTART 1
-#define CDC_STATE_I2C_TXING 2
-#define CDC_STATE_I2C_RXSTART 3
-#define CDC_STATE_I2C_RXING 4
-#define CDC_STATE_SPI_TXSTART 5
-#define CDC_STATE_SPI_TXING 6
-#define CDC_STATE_SPI_RXING 7
-#define CDC_STATE_SPI_TEST 8
 
 #define CDC_FLAG_NOSTOP 0x80
 
@@ -46,7 +36,5 @@ void USB_EP2_IN_cb(void);
 void USB_EP2_OUT_cb(void);
 
 void USB_EP4_IN_cb(void);
-
-void CDC_PutString(char *str);
 
 #endif

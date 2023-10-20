@@ -86,11 +86,8 @@ void main()
       debounceUpdate();
       if (timer == 0)
       {
-        timer = 0x0400;
+        timer = 0x0800;
         Enp1IntIn();
-
-        // CDC_PutString("Timer Update.");
-        // CDC_USB_Poll();
 
         if ((timer & 0x00FF) == 0x0000)
         {
@@ -164,5 +161,8 @@ void main()
       Ep1RequestReplay = 0;
       Enp1IntIn();
     }
+
+    CDC_USB_Poll();
+    CDC_UART_Poll();
   }
 }
