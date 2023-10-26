@@ -15,12 +15,12 @@
 
 // DMA缓冲区必须对齐到偶地址，xRAM自动分配地址往后移动
 uint8_x __at(0x0000) Ep0Buffer[ENDP0_BUFFER_SIZE];                                                                                        // 端点0 OUT&IN缓冲区
-uint8_x __at(ENDP0_BUFFER_SIZE) Ep4BufferOut[ENDP4_BUFFER_SIZE];                                                                          // 端点4 OUT缓冲区
-uint8_x __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) Ep4BufferIn[ENDP4_BUFFER_SIZE];                                                       // 端点4 IN缓冲区
-uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE) Ep1Buffer[2 * ENDP1_BUFFER_SIZE];                                                 // 端点1 OUT&IN缓冲区
-uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) Ep2Buffer[2 * ENDP2_BUFFER_SIZE];                         // 端点2 OUT&IN缓冲区
-uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) Ep3Buffer[2 * ENDP3_BUFFER_SIZE]; // 端点3 OUT&IN缓冲区
-// 自动分配地址从0x0240开始，需修改make文件
+// uint8_x __at(ENDP0_BUFFER_SIZE) Ep4BufferOut[ENDP4_BUFFER_SIZE];                                                                          // 端点4 OUT缓冲区
+// uint8_x __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) Ep4BufferIn[ENDP4_BUFFER_SIZE];                                                       // 端点4 IN缓冲区
+uint8_x __at(ENDP0_BUFFER_SIZE) Ep1Buffer[2 * ENDP1_BUFFER_SIZE];                                                 // 端点1 OUT&IN缓冲区
+uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) Ep2Buffer[2 * ENDP2_BUFFER_SIZE];                         // 端点2 OUT&IN缓冲区
+uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) Ep3Buffer[2 * ENDP3_BUFFER_SIZE]; // 端点3 OUT&IN缓冲区
+// 自动分配地址从0x01C0开始，需修改make文件
 
 const uint8_c usbDevDesc[] = {
     0x12,       // 描述符长度(18字节)
@@ -97,32 +97,32 @@ const uint8_c SegaRepDesc[] = {
     0xC0,                         // End Collection
 };
 
-const uint8_c CustomRepDesc[] = {
-    0x06, 0x00, 0xFF,            // Usage Page (Vendor Defined 0xFF00)
-    0x09, 0x01,                  // Usage (0x01)
-    0xA1, 0x01,                  // Collection (Application)
-    0x85, 0xAA,                  //   Report ID (170)
-    0x95, ENDP3_BUFFER_SIZE - 1, //   Report Count (64)
-    0x75, 0x08,                  //   Report Size (8)
-    0x25, 0x01,                  //   Logical Maximum (1)
-    0x15, 0x00,                  //   Logical Minimum (0)
-    0x09, 0x01,                  //   Usage (0x01)
-    0x81, 0x02,                  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-    0x85, 0x55,                  //   Report ID (85)
-    0x95, ENDP3_BUFFER_SIZE - 1, //   Report Count (64)
-    0x75, 0x08,                  //   Report Size (8)
-    0x25, 0x01,                  //   Logical Maximum (1)
-    0x15, 0x00,                  //   Logical Minimum (0)
-    0x09, 0x01,                  //   Usage (0x01)
-    0x91, 0x02,                  //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-    0xC0,                        // End Collection
-};
+// const uint8_c CustomRepDesc[] = {
+//     0x06, 0x00, 0xFF,            // Usage Page (Vendor Defined 0xFF00)
+//     0x09, 0x01,                  // Usage (0x01)
+//     0xA1, 0x01,                  // Collection (Application)
+//     0x85, 0xAA,                  //   Report ID (170)
+//     0x95, ENDP3_BUFFER_SIZE - 1, //   Report Count (64)
+//     0x75, 0x08,                  //   Report Size (8)
+//     0x25, 0x01,                  //   Logical Maximum (1)
+//     0x15, 0x00,                  //   Logical Minimum (0)
+//     0x09, 0x01,                  //   Usage (0x01)
+//     0x81, 0x02,                  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+//     0x85, 0x55,                  //   Report ID (85)
+//     0x95, ENDP3_BUFFER_SIZE - 1, //   Report Count (64)
+//     0x75, 0x08,                  //   Report Size (8)
+//     0x25, 0x01,                  //   Logical Maximum (1)
+//     0x15, 0x00,                  //   Logical Minimum (0)
+//     0x09, 0x01,                  //   Usage (0x01)
+//     0x91, 0x02,                  //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
+//     0xC0,                        // End Collection
+// };
 
 const uint8_c usbCfgDesc[] = {
     0x09,                 //   bLength
     USB_DESCR_TYP_CONFIG, //   bDescriptorType (Configuration)
-    0xCD, 0x00,           //   wTotalLength 198
-    0x06,                 //   bNumInterfaces 6 (6接口 1_SGIO 2_HID通信 34_CDC 56_CDC)
+    0xAD, 0x00,           //   wTotalLength 173
+    0x05,                 //   bNumInterfaces 6 (6接口 1_SGIO 23_CDC 45_CDC)
     0x01,                 //   bConfigurationValue
     0x04,                 //   iConfiguration (String Index)
     0x80,                 //   Attributes, D7 must be 1, D6 Self-powered, D5 Remote Wakeup, D4-D0=0
@@ -175,44 +175,44 @@ const uint8_c usbCfgDesc[] = {
     // 0x00,              // bFunctionProtocol
     // 0x00,              // Index of string descriptor describing this function 字符串描述符索引
 
-    0x09,                 //   bLength
-    USB_DESCR_TYP_INTERF, //   bDescriptorType (Interface)
-    0x01,                 //   bInterfaceNumber 1
-    0x00,                 //   bAlternateSetting
-    0x02,                 //   bNumEndpoints 2
-    0x03,                 //   bInterfaceClass
-    0x00,                 //   bInterfaceSubClass
-    0x00,                 //   bInterfaceProtocol
-    0x00,                 //   iInterface (String Index)
+    // 0x09,                 //   bLength
+    // USB_DESCR_TYP_INTERF, //   bDescriptorType (Interface)
+    // 0x01,                 //   bInterfaceNumber 1
+    // 0x00,                 //   bAlternateSetting
+    // 0x02,                 //   bNumEndpoints 2
+    // 0x03,                 //   bInterfaceClass
+    // 0x00,                 //   bInterfaceSubClass
+    // 0x00,                 //   bInterfaceProtocol
+    // 0x00,                 //   iInterface (String Index)
 
-    0x09,                        //   bLength
-    USB_DESCR_TYP_HID,           //   bDescriptorType (HID)
-    0x11, 0x01,                  //   bcdHID 1.10
-    0x00,                        //   bCountryCode
-    0x01,                        //   bNumDescriptors
-    USB_DESCR_TYP_REPORT,        //   bDescriptorType[0] (HID)
-    sizeof(CustomRepDesc), 0x00, //   wDescriptorLength[0] 36
+    // 0x09,                        //   bLength
+    // USB_DESCR_TYP_HID,           //   bDescriptorType (HID)
+    // 0x11, 0x01,                  //   bcdHID 1.10
+    // 0x00,                        //   bCountryCode
+    // 0x01,                        //   bNumDescriptors
+    // USB_DESCR_TYP_REPORT,        //   bDescriptorType[0] (HID)
+    // sizeof(CustomRepDesc), 0x00, //   wDescriptorLength[0] 36
 
-    0x07,                    // bLength
-    USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
-    0x83,                    // bEndpointAddress (IN/D2H)
-    0x03,                    // bmAttributes (Interrupt)
-    ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
-    0x32,                    // bInterval 0 (unit depends on device speed)
+    // 0x07,                    // bLength
+    // USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
+    // 0x83,                    // bEndpointAddress (IN/D2H)
+    // 0x03,                    // bmAttributes (Interrupt)
+    // ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
+    // 0x32,                    // bInterval 0 (unit depends on device speed)
 
-    0x07,                    // bLength
-    USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
-    0x03,                    // bEndpointAddress (OUT/H2D)
-    0x03,                    // bmAttributes (Interrupt)
-    ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
-    0x32,                    // bInterval 0 (unit depends on device speed)
+    // 0x07,                    // bLength
+    // USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
+    // 0x03,                    // bEndpointAddress (OUT/H2D)
+    // 0x03,                    // bmAttributes (Interrupt)
+    // ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
+    // 0x32,                    // bInterval 0 (unit depends on device speed)
 
     /* -------------------------------- */
     //  Custom CDC
     // Interface Association Descriptor (CDC) 接口关联描述符
     8,                 // Length of the descriptor 描述符长度
     USB_DESCR_TYP_IAD, // Type: Interface Association Descriptor (IAD) 描述符类型：接口关联描述符
-    0x02,              // First interface: 2 in this case, see following 第一个要关联的接口ID
+    0x01,              // First interface: 2 in this case, see following 第一个要关联的接口ID
     0x02,              // Total number of grouped interfaces 总共要关联的接口数量
     0x02,              // bFunctionClass
     0x02,              // bFunctionSubClass
@@ -222,7 +222,7 @@ const uint8_c usbCfgDesc[] = {
     // Interface descriptor (CDC) 接口描述符
     9,                    // Length of the descriptor 描述符长度
     USB_DESCR_TYP_INTERF, // Type: Interface Descriptor 描述符类型：接口描述符
-    0x02,                 // Interface ID 接口ID
+    0x01,                 // Interface ID 接口ID
     0x00,                 // Alternate setting 备用设置
     0x01,                 // Number of Endpoints 使用端点数量
     0x02,                 // Interface class code - Communication Interface Class 接口类别码：Communications and CDC Control
@@ -243,7 +243,7 @@ const uint8_c usbCfgDesc[] = {
     0x00,                  // bmCapabilities 设备不自己处理调用管理
     // Bit0: Does not handle call management
     // Bit1: Call Management over Comm Class interface
-    0x03, // Data Interfaces 数据所用接口
+    0x02, // Data Interfaces 数据所用接口
 
     // Abstract Control Management (CDC)
     4,                     // Length of the descriptor
@@ -261,8 +261,8 @@ const uint8_c usbCfgDesc[] = {
     5,                     // Length of the descriptor
     USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
     0x06,                  // bDescriptorSubtype: Union func desc
-    0x02,                  // bMasterInterface: Communication class interface
-    0x03,                  // bSlaveInterface: Data Class Interface
+    0x01,                  // bMasterInterface: Communication class interface
+    0x02,                  // bSlaveInterface: Data Class Interface
 
     // EndPoint descriptor (CDC Upload, Interrupt)
     7,                  // Length of the descriptor
@@ -280,7 +280,7 @@ const uint8_c usbCfgDesc[] = {
     // Interface descriptor (CDC)
     9,                    // Length of the descriptor
     USB_DESCR_TYP_INTERF, // Type: Interface Descriptor
-    0x03,                 // Interface ID
+    0x02,                 // Interface ID
     0x00,                 // Alternate setting
     0x02,                 // Number of Endpoints
     0x0A,                 // Interface class code - CDC Data
@@ -298,7 +298,7 @@ const uint8_c usbCfgDesc[] = {
                              // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
                              // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
                              // D7:6 = 0
-    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    ENDP2_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
     0x00,                    // Interval for polling, in units of 1 ms for low/full speed
 
     // EndPoint descriptor (CDC Upload, Bulk)
@@ -311,7 +311,7 @@ const uint8_c usbCfgDesc[] = {
                              // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
                              // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
                              // D7:6 = 0
-    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    ENDP2_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
     0x00,                    // Interval for polling, in units of 1 ms for low/full speed
 
     /* -------------------------------- */
@@ -319,7 +319,7 @@ const uint8_c usbCfgDesc[] = {
     // Interface Association Descriptor (CDC) 接口关联描述符
     8,                 // Length of the descriptor 描述符长度
     USB_DESCR_TYP_IAD, // Type: Interface Association Descriptor (IAD) 描述符类型：接口关联描述符
-    0x04,              // First interface: 4 in this case, see following 第一个要关联的接口ID
+    0x03,              // First interface: 4 in this case, see following 第一个要关联的接口ID
     0x02,              // Total number of grouped interfaces 总共要关联的接口数量
     0x02,              // bFunctionClass
     0x02,              // bFunctionSubClass
@@ -329,7 +329,7 @@ const uint8_c usbCfgDesc[] = {
     // Interface descriptor (CDC) 接口描述符
     9,                    // Length of the descriptor 描述符长度
     USB_DESCR_TYP_INTERF, // Type: Interface Descriptor 描述符类型：接口描述符
-    0x04,                 // Interface ID 接口ID
+    0x03,                 // Interface ID 接口ID
     0x00,                 // Alternate setting 备用设置
     0x01,                 // Number of Endpoints 使用端点数量
     0x02,                 // Interface class code - Communication Interface Class 接口类别码：Communications and CDC Control
@@ -350,7 +350,7 @@ const uint8_c usbCfgDesc[] = {
     0x00,                  // bmCapabilities 设备不自己处理调用管理
     // Bit0: Does not handle call management
     // Bit1: Call Management over Comm Class interface
-    0x05, // Data Interfaces 数据所用接口
+    0x04, // Data Interfaces 数据所用接口
 
     // Abstract Control Management (CDC)
     4,                     // Length of the descriptor
@@ -368,8 +368,8 @@ const uint8_c usbCfgDesc[] = {
     5,                     // Length of the descriptor
     USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
     0x06,                  // bDescriptorSubtype: Union func desc
-    0x04,                  // bMasterInterface: Communication class interface
-    0x05,                  // bSlaveInterface0: Data Class Interface
+    0x03,                  // bMasterInterface: Communication class interface
+    0x04,                  // bSlaveInterface0: Data Class Interface
 
     // EndPoint descriptor (CDC Upload, Interrupt)
     7,                  // Length of the descriptor
@@ -387,7 +387,7 @@ const uint8_c usbCfgDesc[] = {
     // Interface descriptor (CDC)
     9,                    // Length of the descriptor
     USB_DESCR_TYP_INTERF, // Type: Interface Descriptor
-    0x05,                 // Interface ID
+    0x04,                 // Interface ID
     0x00,                 // Alternate setting
     0x02,                 // Number of Endpoints
     0x0A,                 // Interface class code - CDC Data
@@ -398,27 +398,27 @@ const uint8_c usbCfgDesc[] = {
     // EndPoint descriptor (CDC Upload, Bulk)
     7,                       // Length of the descriptor
     USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
-    0x04,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
+    0x03,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
     0x02,                    // Attributes:
                              // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
                              // 			The following only apply to isochronous endpoints. Else set to 0.
                              // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
                              // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
                              // D7:6 = 0
-    ENDP4_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
     0x00,                    // Interval for polling, in units of 1 ms for low/full speed
 
     // EndPoint descriptor (CDC Upload, Bulk)
     7,                       // Length of the descriptor
     USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
-    0x84,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
+    0x83,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
     0x02,                    // Attributes:
                              // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
                              // 			The following only apply to isochronous endpoints. Else set to 0.
                              // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
                              // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
                              // D7:6 = 0
-    ENDP4_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
     0x00                     // Interval for polling, in units of 1 ms for low/full speed
 };
 
@@ -502,32 +502,25 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
   { // USB传输完成
     switch (USB_INT_ST & (MASK_UIS_TOKEN | MASK_UIS_ENDP))
     {                       // 分析操作令牌和端点号
-    case UIS_TOKEN_OUT | 4: // endpoint 4# 中断端点下传
-      if (U_TOG_OK)
-      {
-        len = USB_RX_LEN;
-      }
-      UEP4_CTRL ^= bUEP_R_TOG; // 手动翻转
-      break;
-    case UIS_TOKEN_IN | 4: // endpoint 4# 中断端点上传
-      USB_EP4_IN_cb();
-      UEP4_CTRL ^= bUEP_T_TOG; // 手动翻转
-      break;
+    // case UIS_TOKEN_OUT | 4: // endpoint 4# 中断端点下传
+    //   if (U_TOG_OK)
+    //   {
+    //     len = USB_RX_LEN;
+    //   }
+    //   UEP4_CTRL ^= bUEP_R_TOG; // 手动翻转
+    //   break;
+    // case UIS_TOKEN_IN | 4: // endpoint 4# 中断端点上传
+    //   USB_EP4_IN_cb();
+    //   UEP4_CTRL ^= bUEP_T_TOG; // 手动翻转
+    //   break;
     case UIS_TOKEN_OUT | 3: // endpoint 3# 中断端点下传
       if (U_TOG_OK)
-      { // 不同步的数据包将丢弃
-        len = USB_RX_LEN;
-        // if (Ep3Buffer[0] == 0x55 && (len - 1) <= sizeof(HIDInput) && !HIDIN)
-        // {
-        //   memset(HIDInput, 0x00, sizeof(HIDInput));
-        //   memcpy(HIDInput, Ep3Buffer + 1, len - 1);
-        //   HIDIN = 1;
-        // }
+      {
+        USB_EP3_OUT_cb();
       }
       break;
     case UIS_TOKEN_IN | 3:                                      // endpoint 3# 中断端点上传
-      UEP3_T_LEN = 0;                                           // 预使用发送长度一定要清空
-      UEP3_CTRL  = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK; // 默认应答NAK
+      USB_EP3_IN_cb();
       break;
     case UIS_TOKEN_OUT | 2: // endpoint 2# 中断端点下传
       if (U_TOG_OK)
@@ -624,10 +617,10 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 pDescr = (uint8_t *)(&SegaRepDesc[0]); // 数据准备上传
                 len    = sizeof(SegaRepDesc);
                 break;
-              case 1:
-                pDescr = (uint8_t *)(&CustomRepDesc[0]); // 数据准备上传
-                len    = sizeof(CustomRepDesc);
-                break;
+              // case 1:
+              //   pDescr = (uint8_t *)(&CustomRepDesc[0]); // 数据准备上传
+              //   len    = sizeof(CustomRepDesc);
+              //   break;
               default:
                 len = 0xff; // 不支持的接口，这句话正常不可能执行
                 break;
@@ -673,9 +666,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 case 0x83:
                   UEP3_CTRL = UEP3_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
                   break;
-                case 0x84:
-                  UEP4_CTRL = UEP4_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
-                  break;
+                // case 0x84:
+                //   UEP4_CTRL = UEP4_CTRL & ~(bUEP_T_TOG | MASK_UEP_T_RES) | UEP_T_RES_NAK;
+                //   break;
                 case 0x01:
                   UEP1_CTRL = UEP1_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
                   break;
@@ -685,9 +678,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 case 0x03:
                   UEP3_CTRL = UEP3_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
                   break;
-                case 0x04:
-                  UEP4_CTRL = UEP4_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
-                  break;
+                // case 0x04:
+                //   UEP4_CTRL = UEP4_CTRL & ~(bUEP_R_TOG | MASK_UEP_R_RES) | UEP_R_RES_ACK;
+                //   break;
                 default:
                   len = 0xFF; // 不支持的端点
                   break;
@@ -741,9 +734,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 case 0x83:
                   UEP3_CTRL = UEP3_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL; /* 设置端点3 IN STALL */
                   break;
-                case 0x84:
-                  UEP4_CTRL = UEP4_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL; /* 设置端点4 IN STALL */
-                  break;
+                // case 0x84:
+                //   UEP4_CTRL = UEP4_CTRL & (~bUEP_T_TOG) | UEP_T_RES_STALL; /* 设置端点4 IN STALL */
+                //   break;
                 case 0x01:
                   UEP1_CTRL = UEP1_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL; /* 设置端点1 OUT STALL */
                   break;
@@ -753,9 +746,9 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
                 case 0x03:
                   UEP3_CTRL = UEP3_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL; /* 设置端点3 OUT STALL */
                   break;
-                case 0x04:
-                  UEP4_CTRL = UEP4_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL; /* 设置端点4 OUT STALL */
-                  break;
+                // case 0x04:
+                //   UEP4_CTRL = UEP4_CTRL & (~bUEP_R_TOG) | UEP_R_RES_STALL; /* 设置端点4 OUT STALL */
+                //   break;
                 default:
                   len = 0xFF; // 操作失败
                   break;
@@ -926,7 +919,7 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
     UEP1_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
     UEP2_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
     UEP3_CTRL = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;
-    UEP4_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+    // UEP4_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
     USB_DEV_AD   = 0x00;
     UIF_SUSPEND  = 0;
     UIF_TRANSFER = 0;
@@ -994,8 +987,8 @@ void usbDevInit()
   UEP3_DMA   = (uint16_t)(&Ep3Buffer[0]);                               // 端点3数据传输地址
   UEP2_3_MOD = UEP2_3_MOD & ~bUEP3_BUF_MOD | bUEP3_RX_EN | bUEP3_TX_EN; // 端点3收发使能 128字节缓冲区
   UEP3_CTRL  = bUEP_AUTO_TOG | UEP_R_RES_ACK | UEP_T_RES_NAK;           // 端点3自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
-  UEP4_1_MOD = UEP4_1_MOD | bUEP4_RX_EN | bUEP4_TX_EN;                // 端点4收发使能 128字节缓冲区
-  UEP4_CTRL  = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
+  // UEP4_1_MOD = UEP4_1_MOD | bUEP4_RX_EN | bUEP4_TX_EN;                // 端点4收发使能 128字节缓冲区
+  // UEP4_CTRL  = UEP_R_RES_ACK | UEP_T_RES_NAK;                           // 端点4不支持自动翻转同步标志位，OUT事务返回ACK，IN事务返回NAK
 
   USB_DEV_AD = 0x00;
   USB_CTRL |= bUC_DEV_PU_EN | bUC_INT_BUSY | bUC_DMA_EN; // 启动USB设备及DMA，在中断期间中断标志未清除前自动返回NAK
@@ -1009,7 +1002,7 @@ void usbDevInit()
   UEP1_T_LEN = 0;
   UEP2_T_LEN = 0;
   UEP3_T_LEN = 0;
-  UEP4_T_LEN = 0;
+  // UEP4_T_LEN = 0;
 
   usbSerialDescInit();
 
@@ -1039,13 +1032,13 @@ void Enp1IntIn()
 //     UEP2_CTRL = UEP2_CTRL & ~ MASK_UEP_T_RES | UEP_T_RES_ACK;                   //有数据时上传数据并应答ACK
 // }
 
-void Enp3IntIn()
-{
-  // Ep3Buffer[MAX_PACKET_SIZE] = 0xAA;
-  // memcpy(Ep3Buffer + MAX_PACKET_SIZE + 1, HIDOutput, sizeof(HIDOutput)); // 加载上传数据
-  UEP3_T_LEN = 64;                                          // 上传数据长度
-  UEP3_CTRL  = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // 有数据时上传数据并应答ACK
-}
+// void Enp3IntIn()
+// {
+//   // Ep3Buffer[MAX_PACKET_SIZE] = 0xAA;
+//   // memcpy(Ep3Buffer + MAX_PACKET_SIZE + 1, HIDOutput, sizeof(HIDOutput)); // 加载上传数据
+//   UEP3_T_LEN = 64;                                          // 上传数据长度
+//   UEP3_CTRL  = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // 有数据时上传数据并应答ACK
+// }
 
 /**
  * 清空 HID设备 上传缓冲区

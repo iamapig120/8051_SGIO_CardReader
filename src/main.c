@@ -41,7 +41,7 @@ uint8_t controllerKeyH = 0, controllerKeyL = 0;
 void main()
 {
   uint8_t  i, j;
-  uint16_t timer = 0;
+  static uint16_t timer = 0;
   uint8_t *buffer;
 
   sysClockConfig();
@@ -86,10 +86,10 @@ void main()
       debounceUpdate();
       if (timer == 0)
       {
-        timer = 0x0800;
+        timer = 0x0FFF; // 大于4s一个HID数据包
         Enp1IntIn();
 
-        if ((timer & 0x00FF) == 0x0000)
+        if ((timer & 0x007F) == 0x00) // 大约每秒更新8次灯光，单次更新约需要0.5ms
         {
           rgbPush();
         }

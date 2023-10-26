@@ -1,97 +1,9 @@
 #include "rom.h"
-
 #include "sys.h"
 
-/* -------- 外部存储器驱动 -------- */
+#include "i2c.h"
+ 
 #if defined(HAS_ROM)
-/*
- * EEPROM时序复位
- */
-void __eeprom_reset() {
-    ROM_SDA = 1; delay_us(5);
-    for (uint8_t i = 0; i < 9; i++) {
-        ROM_SCL = 1; delay_us(5);
-        if (ROM_SDA == 1) break;
-        ROM_SCL = 0; delay_us(5);
-    }
-    ROM_SCL = 0; delay_us(5);
-    ROM_SDA = 1;
-    ROM_SCL = 1; delay_us(5);
-    ROM_SDA = 0; delay_us(5);
-}
-
-/*
- * 开始时序
- */
-void __eeprom_start() {
-    ROM_SDA = 1;
-    ROM_SCL = 1; delay_us(5);
-    ROM_SDA = 0; delay_us(5);
-}
-
-/*
- * 停止时序
- */
-void __eeprom_stop() {
-    ROM_SDA = 0;
-    ROM_SCL = 1; delay_us(5);
-    ROM_SDA = 1; delay_us(5);
-}
-
-/*
- * 应答时序
- */
-void __eeprom_ack() {
-    ROM_SCL = 0;
-    ROM_SDA = 1;
-    ROM_SCL = 1; delay_us(5);
-    for (uint8_t i = 0; i < 0xFF; i++)
-        if (ROM_SDA == 0) break;
-    ROM_SCL = 0; delay_us(5);
-}
-
-/*
- * 非应答时序
- */
-void __eeprom_nak() {
-    ROM_SCL = 0;
-    ROM_SDA = 1;
-    ROM_SCL = 1; delay_us(5);
-    ROM_SCL = 0; delay_us(5);
-}
-
-/*
- * 发送一个字节
- */
-void __eeprom_wr(uint8_t data) {
-    for (uint8_t i = 0; i < 8; i++) {
-        ROM_SCL = 0; delay_us(5);
-        ROM_SDA = (data & 0x80); delay_us(5);
-        ROM_SCL = 1; delay_us(5);
-        data <<= 1;
-    }
-    ROM_SCL = 0;
-    ROM_SDA = 1;
-    delay_us(5);
-}
-
-/*
- * 读取一个字节
- */
-uint8_t __eeprom_rd() {
-    uint8_t data = 0;
-    __bit tmp;
-    ROM_SCL = 0; delay_us(5);
-    for (uint8_t i = 0; i < 8; i++) {
-        ROM_SCL = 1; delay_us(5);
-        tmp = ROM_SDA;
-        data <<= 1;
-        data |= tmp;
-        delay_us(5);
-        ROM_SCL = 0; delay_us(5);
-    }
-    return data;
-}
 
 /*
  * 向指定地址写入一个字节
@@ -101,14 +13,14 @@ void __eeprom_write(uint16_t addr, uint8_t data) {
     addr &= (ROM_SIZE - 1);
     uint8_t devAddr = 0xA0 | (((addr >> 8) & 0x07) << 1);
     uint8_t wordAddr = addr & 0xFF;
-    __eeprom_start();
-    __eeprom_wr(devAddr & 0xFE);
-    __eeprom_ack();
-    __eeprom_wr(wordAddr);
-    __eeprom_ack();
-    __eeprom_wr(data);
-    __eeprom_ack();
-    __eeprom_stop();
+    __i2c_start();
+    __i2c_wr(devAddr & 0xFE);
+    __i2c_ack();
+    __i2c_wr(wordAddr);
+    __i2c_ack();
+    __i2c_wr(data);
+    __i2c_ack();
+    __i2c_stop();
     delay_ms(2);
     ROM_WP = 1; delay_us(5);
 }
@@ -121,17 +33,17 @@ uint8_t __eeprom_read(uint16_t addr) {
     uint8_t devAddr = 0xA0 | (((addr >> 8) & 0x07) << 1);
     uint8_t wordAddr = addr & 0xFF;
     uint8_t data = 0;
-    __eeprom_start();
-    __eeprom_wr(devAddr & 0xFE);
-    __eeprom_ack();
-    __eeprom_wr(wordAddr);
-    __eeprom_ack();
-    __eeprom_start();
-    __eeprom_wr(devAddr | 0x01);
-    __eeprom_ack();
-    data = __eeprom_rd();
-    __eeprom_nak();
-    __eeprom_stop();
+    __i2c_start();
+    __i2c_wr(devAddr & 0xFE);
+    __i2c_ack();
+    __i2c_wr(wordAddr);
+    __i2c_ack();
+    __i2c_start();
+    __i2c_wr(devAddr | 0x01);
+    __i2c_ack();
+    data = __i2c_rd();
+    __i2c_nak();
+    __i2c_stop();
     return data;
 }
 #else
@@ -174,10 +86,10 @@ uint8_t __flash_read(uint8_t addr) {
  */
 #if defined(HAS_ROM)
 void romInit() {
-    ROM_SDA = 1;
-    ROM_SCL = 1;
+    I2C_SDA = 1;
+    I2C_SCL = 1;
     ROM_WP = 0; delay_us(5);
-    __eeprom_reset();
+    __i2c_reset();
     ROM_WP = 1; delay_us(5);
 }
 #endif

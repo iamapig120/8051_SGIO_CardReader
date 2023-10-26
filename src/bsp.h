@@ -109,6 +109,9 @@ __sbit  __at (0xB7) P37;
     #define KEY_COUNT 5
     #define LED P12
     #define LED_COUNT 4
+    #define HAS_I2C
+    #define I2C_SDA P11
+    #define I2C_SCL P10
 
     #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_GAMEPAD // 特性支持，高8位
     #define FEATURE_NORMAL FEATURE_EXTEND // 特性支持，低8位
@@ -134,9 +137,10 @@ __sbit  __at (0xB7) P37;
     #define LED P14
     #define LED_COUNT 2
     #define HAS_ROM
+    #define HAS_I2C
     #define ROM_SIZE 0x800
-    #define ROM_SDA P11
-    #define ROM_SCL P10
+    #define I2C_SDA P11
+    #define I2C_SCL P10
     #define ROM_WP P33
 #elif defined(SIM_KEY)
     #define BT1 P17
@@ -144,9 +148,10 @@ __sbit  __at (0xB7) P37;
     #define LED P14
     #define LED_COUNT 1
     #define HAS_ROM
+    #define HAS_I2C
     #define ROM_SIZE 0x800
-    #define ROM_SDA P11
-    #define ROM_SCL P10
+    #define I2C_SDA P11
+    #define I2C_SCL P10
     #define ROM_WP P33
 #elif defined(SIMPAD_TOUCH)
     #define BT1 P15
@@ -158,9 +163,10 @@ __sbit  __at (0xB7) P37;
     // #define LED P33
     #define LED_COUNT 0
     #define HAS_ROM
+    #define HAS_I2C
     #define ROM_SIZE 0x800
-    #define ROM_SDA P10
-    #define ROM_SCL P31
+    #define I2C_SDA P10
+    #define I2C_SCL P31
     #define ROM_WP P11
     #define MOTOR P30
 

@@ -52,8 +52,9 @@ typedef enum
   CMD_SEND_BINDATA_INIT = 0x63,
   CMD_SEND_BINDATA_EXEC = 0x64,
   // FeliCa
-  CMD_FELICA_PUSH                    = 0x70,
-  CMD_FELICA_THROUGH                 = 0x71,
+  CMD_FELICA_PUSH    = 0x70,
+  CMD_FELICA_THROUGH = 0x71,
+
   CMD_FELICA_THROUGH_POLL            = 0x00,
   CMD_FELICA_THROUGH_READ            = 0x06,
   CMD_FELICA_THROUGH_WRITE           = 0x08,
@@ -68,6 +69,8 @@ typedef enum
   CMD_EXT_BOARD_STATUS     = 0xf1,
   CMD_EXT_FIRM_SUM         = 0xf2,
   CMD_EXT_PROTOCOL_VERSION = 0xf3,
+  CMD_EXT_TO_BOOT_MODE     = 0xf4,
+  CMD_EXT_TO_NORMAL_MODE   = 0xf5,
 } IO_COMMAND;
 
 typedef struct
@@ -102,5 +105,94 @@ typedef union
     };
   };
 } IO_Packet;
+
+typedef union
+{
+  uint8_t buffer[64];
+  struct
+  {
+    uint8_t frame_len;
+    uint8_t addr;
+    uint8_t seq_no;
+    uint8_t cmd;
+    uint8_t status;
+    uint8_t payload_len;
+    union
+    {
+      char    version[23];      // sg_nfc_res_get_fw_version,sg_nfc_res_get_hw_version
+      uint8_t reset_payload;    // sg_led_res_reset
+      uint8_t info_payload[12]; // sg_led_res_get_info
+      uint8_t block[16];        // sg_nfc_res_mifare_read_block
+      struct
+      { // sg_nfc_res_poll
+        uint8_t count;
+        uint8_t type;
+        uint8_t id_len;
+        union
+        {
+          uint8_t mifare_uid[4];
+          struct
+          {
+            uint8_t IDm[8];
+            uint8_t PMm[8];
+          };
+        };
+      };
+      struct
+      { // sg_nfc_res_felica_encap
+        uint8_t encap_len;
+        uint8_t code;
+        uint8_t encap_IDm[8];
+        union
+        {
+          struct
+          { // FELICA_CMD_POLL
+            uint8_t encap_PMm[8];
+            uint8_t system_code[2];
+          };
+          struct
+          { // NDA06
+            uint8_t NDA06_code[3];
+            uint8_t NDA06_IDm[8];
+            uint8_t NDA06_Data[8];
+          };
+          uint8_t felica_payload[48];
+        };
+      };
+    };
+  };
+} AIME_Response;
+
+typedef union
+{
+  uint8_t buffer[64];
+  struct
+  {
+    uint8_t sync;
+    uint8_t frame_len;
+    uint8_t addr;
+    uint8_t seq_no;
+    uint8_t cmd;
+    uint8_t payload_len;
+    union
+    {
+      uint8_t key[6];           // sg_nfc_req_mifare_set_key(bana or aime)
+      uint8_t color_payload[3]; // sg_led_req_set_color
+      struct
+      { // sg_nfc_cmd_mifare_select_tag,sg_nfc_cmd_mifare_authenticate,sg_nfc_cmd_mifare_read_block
+        uint8_t uid[4];
+        uint8_t block_no;
+      };
+      struct
+      { // sg_nfc_req_felica_encap
+        uint8_t IDm[8];
+        uint8_t encap_len;
+        uint8_t code;
+        uint8_t felica_payload[48];
+      };
+    };
+  };
+
+} AIME_Request;
 
 #endif

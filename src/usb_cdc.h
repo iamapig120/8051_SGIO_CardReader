@@ -15,7 +15,7 @@
 
 #define CDC_FLAG_NOSTOP 0x80
 
-#define LINECODING_ADDR 0x0240
+#define LINECODING_ADDR 0x01C0
 #define LINECODING_SIZE 7
 
 // 初始化波特率为57600，1停止位，无校验，8数据位。
@@ -25,7 +25,7 @@ uint8_t         LineCoding[];
 // CDC configuration
 extern uint32_t CDC_Baud;
 
-#define CDC_PUTCHARBUF_LEN 64
+#define CDC_PUTCHARBUF_LEN 32
 
 void CDC_InitBaud(void);
 void CDC_SetBaud(void);
@@ -35,6 +35,7 @@ void CDC_UART_Poll(void);
 void USB_EP2_IN_cb(void);
 void USB_EP2_OUT_cb(void);
 
-void USB_EP4_IN_cb(void);
+void USB_EP3_IN_cb(void);
+void USB_EP3_OUT_cb(void);
 
 #endif

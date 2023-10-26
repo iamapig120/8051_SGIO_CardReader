@@ -19,21 +19,21 @@ void Enp1IntIn(); // 上传按键数据
 #define ENDP4_BUFFER_SIZE 64 // 端点4 缓冲区大小；CDC 设备数据缓冲大小
 
 extern __xdata __at(0x0000) uint8_t Ep0Buffer[];                                                                                    // 端点0 OUT&IN缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep4BufferOut[];                                                                      // 端点4 OUT缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) uint8_t Ep4BufferIn[];                                                   // 端点4 IN缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE) uint8_t Ep1Buffer[];                                                 // 端点1 OUT&IN缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) uint8_t Ep2Buffer[];                         // 端点2 OUT&IN缓冲区
-extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP4_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) uint8_t Ep3Buffer[]; // 端点3 OUT&IN缓冲区
+// extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep4BufferOut[];                                                                      // 端点4 OUT缓冲区
+// extern __xdata __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) uint8_t Ep4BufferIn[];                                                   // 端点4 IN缓冲区
+extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep1Buffer[];                                                 // 端点1 OUT&IN缓冲区
+extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) uint8_t Ep2Buffer[];                         // 端点2 OUT&IN缓冲区
+extern __xdata __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) uint8_t Ep3Buffer[]; // 端点3 OUT&IN缓冲区
 
 #define EP1_IN_BUF (Ep1Buffer + ENDP1_BUFFER_SIZE)
 #define EP2_IN_BUF (Ep2Buffer + ENDP2_BUFFER_SIZE)
 #define EP3_IN_BUF (Ep3Buffer + ENDP3_BUFFER_SIZE)
-#define EP4_IN_BUF (Ep4BufferIn)
+// #define EP4_IN_BUF (Ep4BufferIn)
 
 #define EP1_OUT_BUF (Ep1Buffer)
 #define EP2_OUT_BUF (Ep2Buffer)
 #define EP3_OUT_BUF (Ep3Buffer)
-#define EP4_OUT_BUF (Ep4BufferOut)
+// #define EP4_OUT_BUF (Ep4BufferOut)
 
 #define USE_EXT_STR // 是否启用额外的字符串描述符
 
