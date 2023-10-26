@@ -8,8 +8,6 @@ uint8_c bitPosMap[] = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9
 DataReceive *dataReceive;
 DataUpload  *dataForUpload;
 
-uint8_t Ep1RequestReplay = 0;
-
 void io4Init(void)
 {
   // uint8_t i                   = 0;
@@ -22,13 +20,6 @@ void io4Init(void)
   dataForUpload->buttons[3] = 0x80;
   // dataForUpload->systemStatus = 0x02;
   dataForUpload->systemStatus = 0x30;
-}
-
-void io4Upload(void)
-{
-  // EP1_IN_BUF[0] = 0x01;
-  Enp1IntIn();
-  // usbReleaseAll();
 }
 
 void USB_EP1_OUT_cb(void)
@@ -78,9 +69,9 @@ void USB_EP1_OUT_cb(void)
       default:
         break;
       }
-      Ep1RequestReplay = 1;
+      UEP1_T_LEN = 64;
+      UEP1_CTRL  = UEP1_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK;
     }
-
     UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
   }
 }

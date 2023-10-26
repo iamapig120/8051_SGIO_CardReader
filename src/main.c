@@ -156,12 +156,6 @@ void main()
       prevKey = activeKey;
     }
 
-    if (Ep1RequestReplay)
-    {
-      Ep1RequestReplay = 0;
-      Enp1IntIn();
-    }
-
     CDC_USB_Poll();
     CDC_UART_Poll();
   }
