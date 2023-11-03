@@ -170,6 +170,7 @@ uint32_t getChipID(void)
   id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 1)) << 8;
   id |= *(puint8_c)(ROM_CHIP_ID_LO + 1);
   E_DIS = 0;
+  return id;
   // return (((uint32_t)xh << 16) | xl);
 }
 
@@ -293,7 +294,7 @@ __code SysConfig sysConfig = {
 /*
  * 获取系统配置指针
  */
-// SysConfig *sysGetConfig()
-// {
-//   return &sysConfig;
-// }
+SysConfig *sysGetConfig()
+{
+  return &sysConfig;
+}

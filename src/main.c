@@ -56,8 +56,8 @@ void main()
 #endif
 
   // sysLoadConfig();
-  // SysConfig *cfg = sysGetConfig();
-  SysConfig *cfg = (&sysConfig);
+  SysConfig *cfg = sysGetConfig();
+  // SysConfig *cfg = (&sysConfig);
 
   CDC_InitBaud();
   usbDevInit();
@@ -76,15 +76,13 @@ void main()
   // requestHIDData();
 
   sysTickConfig();
+  ADC_START = 1;
 
   sysMsCounter = 0;
   while (1)
   {
     while (sysMsCounter--)
     {
-#ifdef MOTOR
-      motorUpdate();
-#endif
       debounceUpdate();
       if (timer == 0)
       {

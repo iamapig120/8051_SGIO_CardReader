@@ -106,7 +106,7 @@ typedef struct
 
 // uint32_t sysGetRGB(uint16_t color, uint8_t extend);
 // void       sysLoadConfig();
-// SysConfig *sysGetConfig();
+SysConfig *sysGetConfig();
 
 extern __code SysConfig sysConfig;
 

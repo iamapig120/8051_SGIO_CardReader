@@ -64,6 +64,7 @@ void ADC_ChannelSelect(uint8_t ch)
  *******************************************************************************/
 void __ADCInterrupt() __interrupt(INT_NO_ADC) __using(3) // ADC中断服务程序,使用寄存器组1
 {
-  adc_data = ADC_DATA; // 取走ADC采样数据
-  ADC_IF   = 0;        // 清空ADC中断标志
+  adc_data  = ADC_DATA; // 取走ADC采样数据
+  ADC_IF    = 0;        // 清空ADC中断标志
+  ADC_START = 1;        // 开始下次采样
 }
