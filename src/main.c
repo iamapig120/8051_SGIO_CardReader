@@ -1,3 +1,4 @@
+#include "adc.h"
 #include "bsp.h"
 #include "ch552.h"
 #include "debounce.h"
@@ -10,39 +11,36 @@
 
 #include <string.h>
 
-#ifdef MOTOR
-#include "motor.h"
-#endif
-
 #ifdef TOUCH_COUNT
 #include "touchkey.h"
 #endif
 
 void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1); // USB中断定义
+void __tim2Interrupt() __interrupt(INT_NO_TMR2) __using(2);
+void __ADCInterrupt() __interrupt(INT_NO_ADC) __using(3);
+
 #ifdef TOUCH_COUNT
 void __TK_int_ISR() __interrupt(INT_NO_TKEY) __using(1); // TouchKey中断定义
 #endif
-
-void __tim2Interrupt() __interrupt(INT_NO_TMR2) __using(2);
 
 extern uint8_t sysMsCounter;
 
 #if KEY_COUNT <= 8
 uint8_t prevKey = 0; // 上一次扫描时的按键激活状态记录
-uint8_t activeKey;   // 最近一次扫描时的按键激活状态记录
+
+uint8_t activeKey; // 最近一次扫描时的按键激活状态记录
 #elif KEY_COUNT <= 16
 uint16_t prevKey = 0; // 上一次扫描时的按键激活状态记录
 uint16_t activeKey;   // 最近一次扫描时的按键激活状态记录
 #endif
 
-/** @brief 游戏手柄报表，16个按键，16比特 */
-uint8_t controllerKeyH = 0, controllerKeyL = 0;
+uint8_t prevAdc   = 0x80;
+uint8_t adcUpdate = 0;
 
 void main()
 {
-  uint8_t  i, j;
+  uint8_t         i, j;
   static uint16_t timer = 0;
-  uint8_t *buffer;
 
   sysClockConfig();
   delay_ms(20);
@@ -57,13 +55,17 @@ void main()
   TK_SelectChannel(0);                      /* NOTICE: ch is not compatible with the IO actually. */
 #endif
 
-  sysLoadConfig();
-  SysConfig *cfg = sysGetConfig();
+  // sysLoadConfig();
+  // SysConfig *cfg = sysGetConfig();
+  SysConfig *cfg = (&sysConfig);
 
   CDC_InitBaud();
   usbDevInit();
   debounceInit();
   rgbInit();
+
+  ADCInit(1); // 慢采样
+  ADC_ChannelSelect(1);
 
   EA = 1; // 启用中断
 
@@ -98,12 +100,29 @@ void main()
     }
 
     activeKey = 0;
+    if (prevAdc > adc_data)
+    {
+      if (prevAdc - adc_data > 0x04)
+      {
+        prevAdc   = adc_data;
+        adcUpdate = 1;
+      }
+    }
+    else
+    {
+      if (adc_data - prevAdc > 0x04)
+      {
+        prevAdc   = adc_data;
+        adcUpdate = 1;
+      }
+    }
+
     for (i = 0; i < KEY_COUNT; i++)
     {
       activeKey <<= 1;
       activeKey |= isKeyActive(i);
     }
-    if (prevKey != activeKey)
+    if (prevKey != activeKey || adcUpdate)
     {
       prevKey ^= activeKey;
       for (i = 0; i < KEY_COUNT; i++)
@@ -111,13 +130,6 @@ void main()
         // 如果第i个键是被更改的
         if ((prevKey >> i) & 0x01)
         {
-#ifdef MOTOR
-          // 如果第i个键是被更改的，并且这个操作是激活
-          if ((activeKey >> i) & 0x01)
-          {
-            activeMotor(5000);
-          }
-#endif
           // usbReleaseAll();
           switch (cfg->keyConfig[i].mode)
           {
@@ -126,10 +138,9 @@ void main()
             break;
           case GamepadButton_Indexed:
 
-            buffer    = EP1_IN_BUF;
-            buffer[0] = 1;
+            EP1_IN_BUF[0] = 1;
 
-            dataForUpload = (DataUpload *)(&(buffer[1]));
+            dataForUpload = (DataUpload *)(&(EP1_IN_BUF[1]));
             memset(dataForUpload->buttons, 0x00, 4);
 
             for (j = 0; j < KEY_COUNT; j++)
@@ -146,14 +157,18 @@ void main()
             dataForUpload->buttons[3] ^= 0x80; // Lside取反
             dataForUpload->buttons[1] ^= 0x40; // Rside取反
 
-            Enp1IntIn(); // 发送 HID1 数据包
             break;
           default:
             break;
           }
         }
       }
-      prevKey = activeKey;
+
+      dataForUpload->analog[0] = (((uint16_t)prevAdc) << 8);
+
+      prevKey   = activeKey;
+      adcUpdate = 0;
+      Enp1IntIn(); // 发送 HID1 数据包
     }
 
     CDC_USB_Poll();

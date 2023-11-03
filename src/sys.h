@@ -101,11 +101,13 @@ typedef struct
 typedef struct
 {
   KeyConfig keyConfig[KEY_COUNT];
-  LEDConfig ledConfig[LED_COUNT];
+  // LEDConfig ledConfig[LED_COUNT];
 } SysConfig;
 
 // uint32_t sysGetRGB(uint16_t color, uint8_t extend);
-void       sysLoadConfig();
-SysConfig *sysGetConfig();
+// void       sysLoadConfig();
+// SysConfig *sysGetConfig();
+
+extern __code SysConfig sysConfig;
 
 #endif

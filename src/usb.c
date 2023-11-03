@@ -15,8 +15,6 @@
 
 // DMA缓冲区必须对齐到偶地址，xRAM自动分配地址往后移动
 uint8_x __at(0x0000) Ep0Buffer[ENDP0_BUFFER_SIZE];                                                                                        // 端点0 OUT&IN缓冲区
-// uint8_x __at(ENDP0_BUFFER_SIZE) Ep4BufferOut[ENDP4_BUFFER_SIZE];                                                                          // 端点4 OUT缓冲区
-// uint8_x __at(ENDP0_BUFFER_SIZE + ENDP4_BUFFER_SIZE) Ep4BufferIn[ENDP4_BUFFER_SIZE];                                                       // 端点4 IN缓冲区
 uint8_x __at(ENDP0_BUFFER_SIZE) Ep1Buffer[2 * ENDP1_BUFFER_SIZE];                                                 // 端点1 OUT&IN缓冲区
 uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE) Ep2Buffer[2 * ENDP2_BUFFER_SIZE];                         // 端点2 OUT&IN缓冲区
 uint8_x __at(ENDP0_BUFFER_SIZE + 2 * ENDP1_BUFFER_SIZE + 2 * ENDP2_BUFFER_SIZE) Ep3Buffer[2 * ENDP3_BUFFER_SIZE]; // 端点3 OUT&IN缓冲区

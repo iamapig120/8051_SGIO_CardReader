@@ -1,6 +1,6 @@
 #include "usb_cdc.h"
 #include "ch552.h"
-#include "pn532.h"
+// #include "pn532.h"
 #include "rgb.h"
 #include "usb.h"
 #include <string.h>

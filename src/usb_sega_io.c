@@ -14,7 +14,7 @@ void io4Init(void)
   EP1_IN_BUF[0] = 1;
   dataForUpload = (DataUpload *)(&(EP1_IN_BUF[1]));
 
-  dataForUpload->analog[0] = 0x84F0;
+  dataForUpload->analog[0] = 0x8000;
   // dataForUpload->rotary[0]    = 0x8100;
   dataForUpload->buttons[1] = 0x40;
   dataForUpload->buttons[3] = 0x80;

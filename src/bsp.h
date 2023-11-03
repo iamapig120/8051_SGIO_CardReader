@@ -106,9 +106,9 @@ __sbit  __at (0xB7) P37;
     #define BT3 P34
     #define BT4 P32
     #define BT5 P33
-    #define KEY_COUNT 5
+    #define KEY_COUNT 12
     #define LED P12
-    #define LED_COUNT 4
+    #define LED_COUNT 8
     #define HAS_I2C
     #define I2C_SDA P11
     #define I2C_SCL P10
