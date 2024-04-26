@@ -101,17 +101,25 @@ __sbit  __at (0xB7) P37;
 
 /* 板级接口定义，需要注意的是，按键需定义为BTx */
 #if defined(SEGA_IO_BOARD)
-    #define BT1 P30
-    #define BT2 P31
-    #define BT3 P34
-    #define BT4 P32
-    #define BT5 P33
+    #define ROW1 P33
+    #define ROW2 P30
+    #define ROW3 P31
+
+    #define COL1 P14
+    #define COL2 P15
+    #define COL3 P10
+    #define COL4 P11
+
     #define KEY_COUNT 12
-    #define LED P12
-    #define LED_COUNT 8
+    #define LED P13
+    #define LED_COUNT 1
+
+    #define LED_2 P12
+    #define LED_2_COUNT 1
+
     #define HAS_I2C
-    #define I2C_SDA P11
-    #define I2C_SCL P10
+    #define I2C_SDA P35
+    #define I2C_SCL P34
 
     #define FEATURE_BASIC FEATURE_BASIC_KEYBOARD | FEATURE_BASIC_GAMEPAD // 特性支持，高8位
     #define FEATURE_NORMAL FEATURE_EXTEND // 特性支持，低8位

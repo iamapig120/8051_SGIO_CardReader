@@ -46,7 +46,7 @@ typedef struct
 
 void io4Init(void);
 
-extern uint8_c bitPosMap[0x12];
+// extern uint8_c bitPosMap[0x12];
 
 extern DataReceive *dataReceive;
 extern DataUpload  *dataForUpload;

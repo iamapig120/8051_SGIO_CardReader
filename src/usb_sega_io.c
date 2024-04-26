@@ -3,7 +3,9 @@
 #include "rgb.h"
 #include "usb.h"
 
-uint8_c bitPosMap[] = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+uint8_c  bitPosMap[]      = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+uint32_t ledData          = 0;
+uint32_t ledDataFor422    = 0;
 
 DataReceive *dataReceive;
 DataUpload  *dataForUpload;
@@ -24,8 +26,7 @@ void io4Init(void)
 
 void USB_EP1_OUT_cb(void)
 {
-  uint32_t ledData;
-  uint8_t  i;
+  uint8_t i;
   if (U_TOG_OK)
   {
     UEP1_CTRL = UEP1_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
@@ -52,19 +53,26 @@ void USB_EP1_OUT_cb(void)
 
         break;
       case SET_GENERAL_OUTPUT:
-        ledData = (uint32_t)(dataReceive->payload[0]) << 16 | (uint32_t)(dataReceive->payload[1]) << 8 | dataReceive->payload[2];
+        ledData       = (uint32_t)(dataReceive->payload[0]) << 16 | (uint32_t)(dataReceive->payload[1]) << 8 | dataReceive->payload[2];
+        ledDataFor422 = 0;
+        // Right1, Left1, Right2, Left2, Right3, Left3
         for (i = 0; i < 3; i++)
         {
-          // Left1, Left2, Left3, Right1, Right2, Right3
-          rgbSet(i,
-              (((ledData >> bitPosMap[9 + i * 3]) & 1) ? 0xFF0000 : 0x00000000) |
-                  (((ledData >> bitPosMap[9 + i * 3 + 1]) & 1) ? 0x00FF00 : 0x00000000) |
-                  (((ledData >> bitPosMap[9 + i * 3 + 2]) & 1) ? 0x000000FF : 0x00000000)); // r
-          // rgbSet(i + 3,
-          //     (((ledData >> bitPosMap[i * 3]) & 1) ? 0xFF0000 : 0x00000000) |
-          //         (((ledData >> bitPosMap[i * 3 + 1]) & 1) ? 0x00FF00 : 0x00000000) |
-          //         (((ledData >> bitPosMap[i * 3 + 2]) & 1) ? 0x000000FF : 0x00000000)); // l
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3 + 2]) & 1;
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3 + 1]) & 1;
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3]) & 1;
+          
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[i * 3 + 2]) & 1; // B
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[i * 3 + 1]) & 1; // G
+          ledDataFor422 <<= 1;
+          ledDataFor422 |= (ledData >> bitPosMap[i * 3]) & 1; // R
         }
+        isLedDataChanged |= 0x01;
         break;
       default:
         break;

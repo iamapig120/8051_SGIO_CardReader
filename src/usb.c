@@ -31,7 +31,7 @@ const uint8_c usbDevDesc[] = {
     ENDP0_BUFFER_SIZE,            // 端点0最大包长
     VENDOR_ID_L, VENDOR_ID_H,     // 厂商ID
     PRODUCT_ID_L, PRODUCT_ID_H,   // 产品ID
-    PRODUCT_BCD_L, PRODUCT_BCD_H, // 设备版本号 (2.04)
+    PRODUCT_BCD_L, PRODUCT_BCD_H, // 设备版本号
     0x01,                         // 描述厂商信息的字符串描述符的索引值
     0x02,                         // 描述产品信息的字串描述符的索引值
     0x03,                         // 描述设备序列号信息的字串描述符的索引值
@@ -119,8 +119,8 @@ const uint8_c SegaRepDesc[] = {
 const uint8_c usbCfgDesc[] = {
     0x09,                 //   bLength
     USB_DESCR_TYP_CONFIG, //   bDescriptorType (Configuration)
-    0xAD, 0x00,           //   wTotalLength 173
-    0x05,                 //   bNumInterfaces 6 (6接口 1_SGIO 23_CDC 45_CDC)
+    0x6B, 0x00,           //   wTotalLength 173
+    0x03,                 //   bNumInterfaces 6 (6接口 1_SGIO 23_CDC 45_CDC)
     0x01,                 //   bConfigurationValue
     0x04,                 //   iConfiguration (String Index)
     0x80,                 //   Attributes, D7 must be 1, D6 Self-powered, D5 Remote Wakeup, D4-D0=0
@@ -160,50 +160,6 @@ const uint8_c usbCfgDesc[] = {
     0x03,                    // bmAttributes (Interrupt)
     ENDP1_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
     0x05,                    // bInterval 5 (unit depends on device speed)
-
-    /* -------------------------------- */
-    //  Custom HID
-    // Interface Association Descriptor 接口关联描述符
-    // 8,                 // Length of the descriptor 描述符长度
-    // USB_DESCR_TYP_IAD, // Type: Interface Association Descriptor (IAD) 描述符类型：接口关联描述符
-    // 0x02,              // First interface: 2 in this case, see following 第一个要关联的接口ID
-    // 0x01,              // Total number of grouped interfaces 总共要关联的接口数量
-    // 0x03,              // bFunctionClass
-    // 0x00,              // bFunctionSubClass
-    // 0x00,              // bFunctionProtocol
-    // 0x00,              // Index of string descriptor describing this function 字符串描述符索引
-
-    // 0x09,                 //   bLength
-    // USB_DESCR_TYP_INTERF, //   bDescriptorType (Interface)
-    // 0x01,                 //   bInterfaceNumber 1
-    // 0x00,                 //   bAlternateSetting
-    // 0x02,                 //   bNumEndpoints 2
-    // 0x03,                 //   bInterfaceClass
-    // 0x00,                 //   bInterfaceSubClass
-    // 0x00,                 //   bInterfaceProtocol
-    // 0x00,                 //   iInterface (String Index)
-
-    // 0x09,                        //   bLength
-    // USB_DESCR_TYP_HID,           //   bDescriptorType (HID)
-    // 0x11, 0x01,                  //   bcdHID 1.10
-    // 0x00,                        //   bCountryCode
-    // 0x01,                        //   bNumDescriptors
-    // USB_DESCR_TYP_REPORT,        //   bDescriptorType[0] (HID)
-    // sizeof(CustomRepDesc), 0x00, //   wDescriptorLength[0] 36
-
-    // 0x07,                    // bLength
-    // USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
-    // 0x83,                    // bEndpointAddress (IN/D2H)
-    // 0x03,                    // bmAttributes (Interrupt)
-    // ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
-    // 0x32,                    // bInterval 0 (unit depends on device speed)
-
-    // 0x07,                    // bLength
-    // USB_DESCR_TYP_ENDP,      // bDescriptorType (Endpoint)
-    // 0x03,                    // bEndpointAddress (OUT/H2D)
-    // 0x03,                    // bmAttributes (Interrupt)
-    // ENDP2_BUFFER_SIZE, 0x00, // wMaxPacketSize 64
-    // 0x32,                    // bInterval 0 (unit depends on device speed)
 
     /* -------------------------------- */
     //  Custom CDC
@@ -312,112 +268,112 @@ const uint8_c usbCfgDesc[] = {
     ENDP2_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
     0x00,                    // Interval for polling, in units of 1 ms for low/full speed
 
-    /* -------------------------------- */
-    //  Custom CDC
-    // Interface Association Descriptor (CDC) 接口关联描述符
-    8,                 // Length of the descriptor 描述符长度
-    USB_DESCR_TYP_IAD, // Type: Interface Association Descriptor (IAD) 描述符类型：接口关联描述符
-    0x03,              // First interface: 4 in this case, see following 第一个要关联的接口ID
-    0x02,              // Total number of grouped interfaces 总共要关联的接口数量
-    0x02,              // bFunctionClass
-    0x02,              // bFunctionSubClass
-    0x00,              // bFunctionProtocol
-    0x08,              // Index of string descriptor describing this function 字符串描述符索引
+    // /* -------------------------------- */
+    // //  Custom CDC
+    // // Interface Association Descriptor (CDC) 接口关联描述符
+    // 8,                 // Length of the descriptor 描述符长度
+    // USB_DESCR_TYP_IAD, // Type: Interface Association Descriptor (IAD) 描述符类型：接口关联描述符
+    // 0x03,              // First interface: 4 in this case, see following 第一个要关联的接口ID
+    // 0x02,              // Total number of grouped interfaces 总共要关联的接口数量
+    // 0x02,              // bFunctionClass
+    // 0x02,              // bFunctionSubClass
+    // 0x00,              // bFunctionProtocol
+    // 0x08,              // Index of string descriptor describing this function 字符串描述符索引
 
-    // Interface descriptor (CDC) 接口描述符
-    9,                    // Length of the descriptor 描述符长度
-    USB_DESCR_TYP_INTERF, // Type: Interface Descriptor 描述符类型：接口描述符
-    0x03,                 // Interface ID 接口ID
-    0x00,                 // Alternate setting 备用设置
-    0x01,                 // Number of Endpoints 使用端点数量
-    0x02,                 // Interface class code - Communication Interface Class 接口类别码：Communications and CDC Control
-    0x02,                 // Subclass code - Abstract Control Model 抽象控制模型
-    0x01,                 // Protocol code - AT Command V.250 protocol 通用AT命令协议
-    0x00,                 // Index of corresponding string descriptor (On Windows, it is called "Bus reported device description") 字符串描述符索引
+    // // Interface descriptor (CDC) 接口描述符
+    // 9,                    // Length of the descriptor 描述符长度
+    // USB_DESCR_TYP_INTERF, // Type: Interface Descriptor 描述符类型：接口描述符
+    // 0x03,                 // Interface ID 接口ID
+    // 0x00,                 // Alternate setting 备用设置
+    // 0x01,                 // Number of Endpoints 使用端点数量
+    // 0x02,                 // Interface class code - Communication Interface Class 接口类别码：Communications and CDC Control
+    // 0x02,                 // Subclass code - Abstract Control Model 抽象控制模型
+    // 0x01,                 // Protocol code - AT Command V.250 protocol 通用AT命令协议
+    // 0x00,                 // Index of corresponding string descriptor (On Windows, it is called "Bus reported device description") 字符串描述符索引
 
-    // Header Functional descriptor (CDC)
-    5,                     // Length of the descriptor
-    USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE 描述符类性：类特殊接口，CS_INTERFACE
-    0x00,                  // bDescriptorsubtype, HEADER
-    0x20, 0x01,            // bcdCDC
+    // // Header Functional descriptor (CDC)
+    // 5,                     // Length of the descriptor
+    // USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE 描述符类性：类特殊接口，CS_INTERFACE
+    // 0x00,                  // bDescriptorsubtype, HEADER
+    // 0x20, 0x01,            // bcdCDC
 
-    // Call Management Functional Descriptor (CDC)
-    5,                     // Length of the descriptor
-    USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
-    0x01,                  // bDescriptorsubtype, Call Management Functional Descriptor
-    0x00,                  // bmCapabilities 设备不自己处理调用管理
-    // Bit0: Does not handle call management
-    // Bit1: Call Management over Comm Class interface
-    0x04, // Data Interfaces 数据所用接口
+    // // Call Management Functional Descriptor (CDC)
+    // 5,                     // Length of the descriptor
+    // USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
+    // 0x01,                  // bDescriptorsubtype, Call Management Functional Descriptor
+    // 0x00,                  // bmCapabilities 设备不自己处理调用管理
+    // // Bit0: Does not handle call management
+    // // Bit1: Call Management over Comm Class interface
+    // 0x04, // Data Interfaces 数据所用接口
 
-    // Abstract Control Management (CDC)
-    4,                     // Length of the descriptor
-    USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
-    0x02,                  // bDescriptorsubtype, Abstract Control Management
-    0x02,                  // bmCapabilities
-    // Bit0: CommFeature
-    // Bit1: LineStateCoding  Device supports the request combination of
-    // Set_Line_Coding,	Set_Control_Line_State, Get_Line_Coding, and the notification Serial_State.
-    // Bit2: SendBreak
-    // Bit3: NetworkConnection
-    // 支持 Set_Line_Coding、Set_Control_Line_State、Get_Line_Coding、Serial_State
+    // // Abstract Control Management (CDC)
+    // 4,                     // Length of the descriptor
+    // USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
+    // 0x02,                  // bDescriptorsubtype, Abstract Control Management
+    // 0x02,                  // bmCapabilities
+    // // Bit0: CommFeature
+    // // Bit1: LineStateCoding  Device supports the request combination of
+    // // Set_Line_Coding,	Set_Control_Line_State, Get_Line_Coding, and the notification Serial_State.
+    // // Bit2: SendBreak
+    // // Bit3: NetworkConnection
+    // // 支持 Set_Line_Coding、Set_Control_Line_State、Get_Line_Coding、Serial_State
 
-    // Union Functional Descriptor (CDC)
-    5,                     // Length of the descriptor
-    USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
-    0x06,                  // bDescriptorSubtype: Union func desc
-    0x03,                  // bMasterInterface: Communication class interface
-    0x04,                  // bSlaveInterface0: Data Class Interface
+    // // Union Functional Descriptor (CDC)
+    // 5,                     // Length of the descriptor
+    // USB_DESCR_TYP_CS_INTF, // bDescriptortype, CS_INTERFACE
+    // 0x06,                  // bDescriptorSubtype: Union func desc
+    // 0x03,                  // bMasterInterface: Communication class interface
+    // 0x04,                  // bSlaveInterface0: Data Class Interface
 
-    // EndPoint descriptor (CDC Upload, Interrupt)
-    7,                  // Length of the descriptor
-    USB_DESCR_TYP_ENDP, // Type: Endpoint Descriptor
-    0x86,               // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number（不存在的端点）
-    0x03,               // Attributes:
-                        // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
-                        // 			The following only apply to isochronous endpoints. Else set to 0.
-                        // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
-                        // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
-                        // D7:6 = 0
-    0x08, 0x00,         // Maximum packet size can be handled
-    0x40,               // Interval for polling, in units of 1 ms for low/full speed
+    // // EndPoint descriptor (CDC Upload, Interrupt)
+    // 7,                  // Length of the descriptor
+    // USB_DESCR_TYP_ENDP, // Type: Endpoint Descriptor
+    // 0x86,               // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number（不存在的端点）
+    // 0x03,               // Attributes:
+    //                     // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
+    //                     // 			The following only apply to isochronous endpoints. Else set to 0.
+    //                     // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
+    //                     // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
+    //                     // D7:6 = 0
+    // 0x08, 0x00,         // Maximum packet size can be handled
+    // 0x40,               // Interval for polling, in units of 1 ms for low/full speed
 
-    // Interface descriptor (CDC)
-    9,                    // Length of the descriptor
-    USB_DESCR_TYP_INTERF, // Type: Interface Descriptor
-    0x04,                 // Interface ID
-    0x00,                 // Alternate setting
-    0x02,                 // Number of Endpoints
-    0x0A,                 // Interface class code - CDC Data
-    0x00,                 // Subclass code
-    0x00,                 // Protocol code
-    0x00,                 // Index of corresponding string descriptor (On Windows, it is called "Bus reported device description")
+    // // Interface descriptor (CDC)
+    // 9,                    // Length of the descriptor
+    // USB_DESCR_TYP_INTERF, // Type: Interface Descriptor
+    // 0x04,                 // Interface ID
+    // 0x00,                 // Alternate setting
+    // 0x02,                 // Number of Endpoints
+    // 0x0A,                 // Interface class code - CDC Data
+    // 0x00,                 // Subclass code
+    // 0x00,                 // Protocol code
+    // 0x00,                 // Index of corresponding string descriptor (On Windows, it is called "Bus reported device description")
 
-    // EndPoint descriptor (CDC Upload, Bulk)
-    7,                       // Length of the descriptor
-    USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
-    0x03,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
-    0x02,                    // Attributes:
-                             // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
-                             // 			The following only apply to isochronous endpoints. Else set to 0.
-                             // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
-                             // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
-                             // D7:6 = 0
-    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
-    0x00,                    // Interval for polling, in units of 1 ms for low/full speed
+    // // EndPoint descriptor (CDC Upload, Bulk)
+    // 7,                       // Length of the descriptor
+    // USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
+    // 0x03,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
+    // 0x02,                    // Attributes:
+    //                          // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
+    //                          // 			The following only apply to isochronous endpoints. Else set to 0.
+    //                          // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
+    //                          // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
+    //                          // D7:6 = 0
+    // ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    // 0x00,                    // Interval for polling, in units of 1 ms for low/full speed
 
-    // EndPoint descriptor (CDC Upload, Bulk)
-    7,                       // Length of the descriptor
-    USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
-    0x83,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
-    0x02,                    // Attributes:
-                             // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
-                             // 			The following only apply to isochronous endpoints. Else set to 0.
-                             // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
-                             // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
-                             // D7:6 = 0
-    ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
-    0x00                     // Interval for polling, in units of 1 ms for low/full speed
+    // // EndPoint descriptor (CDC Upload, Bulk)
+    // 7,                       // Length of the descriptor
+    // USB_DESCR_TYP_ENDP,      // Type: Endpoint Descriptor
+    // 0x83,                    // Endpoint: D7: 0-Out 1-In, D6-D4=0, D3-D0 Endpoint number
+    // 0x02,                    // Attributes:
+    //                          // D1:0 Transfer type: 00 = Control 01 = Isochronous 10 = Bulk 11 = Interrupt
+    //                          // 			The following only apply to isochronous endpoints. Else set to 0.
+    //                          // D3:2 Synchronization Type: 00 = No Synchronization 01 = Asynchronous 10 = Adaptive 11 = Synchronous
+    //                          // D5:4	Usage Type: 00 = Data endpoint 01 = Feedback endpoint 10 = Implicit feedback Data endpoint 11 = Reserved
+    //                          // D7:6 = 0
+    // ENDP3_BUFFER_SIZE, 0x00, // Maximum packet size can be handled
+    // 0x00                     // Interval for polling, in units of 1 ms for low/full speed
 };
 
 const uint8_c usbLangDesc[] = {0x04, USB_DESCR_TYP_STRING, 0x09, 0x04};
@@ -470,7 +426,7 @@ const uint8_c Com1StrDesc[] = {0x1E, USB_DESCR_TYP_STRING, 'L', 0, 'E', 0, 'D', 
 const uint8_c Com2StrDesc[] = {0x22, USB_DESCR_TYP_STRING, 'C', 0, 'a', 0, 'r', 0, 'd', 0, ' ', 0, 'R', 0, 'e', 0, 'a', 0, 'd', 0, 'e', 0, 'r', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, '1', 0};
 #endif
 
-uint8_x HIDMouse[4] = {0}; // 鼠标数据
+// uint8_x HIDMouse[4] = {0}; // 鼠标数据
 /*
     byte 0: HID 数据包模式 ID
     byte 1:
@@ -481,7 +437,7 @@ uint8_x HIDMouse[4] = {0}; // 鼠标数据
         media key
     byte 3-9: standard key
 */
-uint8_x HIDKey[10] = {0}; // 键盘数据
+// uint8_x HIDKey[10] = {0}; // 键盘数据
 // uint8_x        HIDInput[ENDP3_BUFFER_SIZE]  = {0};              // 自定义HID接收缓冲
 // uint8_x        HIDOutput[ENDP3_BUFFER_SIZE] = {0};              // 自定义HID发送缓冲
 
@@ -514,11 +470,11 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
     case UIS_TOKEN_OUT | 3: // endpoint 3# 中断端点下传
       if (U_TOG_OK)
       {
-        USB_EP3_OUT_cb();
+        // USB_EP3_OUT_cb();
       }
       break;
     case UIS_TOKEN_IN | 3:                                      // endpoint 3# 中断端点上传
-      USB_EP3_IN_cb();
+      // USB_EP3_IN_cb();
       break;
     case UIS_TOKEN_OUT | 2: // endpoint 2# 中断端点下传
       if (U_TOG_OK)

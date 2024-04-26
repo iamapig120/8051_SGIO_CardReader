@@ -1,8 +1,10 @@
 #include "adc.h"
 #include "ch552.h"
 
-uint8_t adc_data = 0x80;
+uint8_x adc_buff[]  = {0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80};
+uint8_t adc_pointer = 0;
 
+uint16_t adc_var = 0x8000;
 /*******************************************************************************
 * Function Name  : ADCInit(UINT8 div)
 * Description    : ADC采样时钟设置,模块开启，中断开启
@@ -23,13 +25,12 @@ void ADCInit(uint8_t div)
 }
 
 /*******************************************************************************
-* Function Name  : ADC_ChannelSelect(UINT8 ch)
-* Description    : ADC采样启用
-* Input          : UINT8 ch 采用通道
-* Output         : None
-* Return         : 成功 SUCCESS
-                   失败 FAIL
-*******************************************************************************/
+ * Function Name  : ADC_ChannelSelect(UINT8 ch)
+ * Description    : ADC采样启用
+ * Input          : UINT8 ch 采用通道
+ * Output         : None
+ * Return         : None
+ *******************************************************************************/
 void ADC_ChannelSelect(uint8_t ch)
 {
   if (ch == 0)
@@ -59,12 +60,22 @@ void ADC_ChannelSelect(uint8_t ch)
 }
 
 /*******************************************************************************
- * Function Name  : ADCInterrupt()
- * Description    : ADC 中断服务程序
+ * Function Name  : ADC_update()
+ * Description    : ADC 更新信息
  *******************************************************************************/
-void __ADCInterrupt() __interrupt(INT_NO_ADC) __using(3) // ADC中断服务程序,使用寄存器组1
+void ADC_update()
 {
-  adc_data  = ADC_DATA; // 取走ADC采样数据
-  ADC_IF    = 0;        // 清空ADC中断标志
-  ADC_START = 1;        // 开始下次采样
+  uint8_t i;
+  adc_buff[adc_pointer] = ADC_DATA; // 取走ADC采样数据
+  adc_pointer++;
+  if (adc_pointer >= 0x08)
+  {
+    adc_pointer = 0x00;
+  }
+  adc_var = 0x0000;
+  for (i = 0; i < sizeof(adc_buff); i++)
+  {
+    adc_var += adc_buff[i];
+  }
+  adc_var <<= 5;
 }

@@ -7,7 +7,7 @@
 #include <string.h>
 
 // volatile uint32_i sysTickCount = 0; // 系统刻计数器
-// static __xdata SysConfig sysConfig;        // 系统配置存储
+static __xdata SysConfig sysConfig;        // 系统配置存储
 uint16_t sysMsCounter = 0; // 系统ms计数器
 
 /*
@@ -155,23 +155,23 @@ void sysTickConfig()
  */
 uint32_t getChipID(void)
 {
-  // uint8_t d0, d1;
-  // uint16_t xl, xh;
-  uint32_t id = 0;
+  uint8_t d0, d1;
+  uint16_t xl, xh;
+  // uint32_t id = 0;
   E_DIS       = 1; // 避免进入中断
-  // d0 = *(puint8_c)(ROM_CHIP_ID_LO + 0);
-  // d1 = *(puint8_c)(ROM_CHIP_ID_LO + 1);  // ID号低字
-  // xl = (d1 << 8) | d0;
-  // d0 = *(puint8_c)(ROM_CHIP_ID_LO + 2);
-  // d1 = *(puint8_c)(ROM_CHIP_ID_LO + 3);  // ID号高字
-  // xh = (d1 << 8) | d0;
-  id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 0)) << 24;
-  id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 1)) << 16;
-  id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 1)) << 8;
-  id |= *(puint8_c)(ROM_CHIP_ID_LO + 1);
+  d0 = *(puint8_c)(ROM_CHIP_ID_LO + 0);
+  d1 = *(puint8_c)(ROM_CHIP_ID_LO + 1);  // ID号低字
+  xl = (d1 << 8) | d0;
+  d0 = *(puint8_c)(ROM_CHIP_ID_LO + 2);
+  d1 = *(puint8_c)(ROM_CHIP_ID_LO + 3);  // ID号高字
+  xh = (d1 << 8) | d0;
+  // id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 0)) << 24;
+  // id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 1)) << 16;
+  // id |= (uint32_t)(*(puint8_c)(ROM_CHIP_ID_LO + 1)) << 8;
+  // id |= *(puint8_c)(ROM_CHIP_ID_LO + 1);
   E_DIS = 0;
-  return id;
-  // return (((uint32_t)xh << 16) | xl);
+  // return id;
+  return (((uint32_t)xh << 16) | xl);
 }
 
 /*
@@ -202,94 +202,94 @@ uint8_t hexToChar(uint8_t bHex)
 //     return val;
 // }
 
-// #define KEY_CFG(i) (sysConfig.keyConfig[i])
-// #define LED_CFG(i) (sysConfig.ledConfig[i])
+#define KEY_CFG(i) (sysConfig.keyConfig[i])
+#define LED_CFG(i) (sysConfig.ledConfig[i])
 
-__code SysConfig sysConfig = {
-    .keyConfig = {
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x03,
-            0x40},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x01,
-            0x20},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x01,
-            0x02},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x00,
-            0x40},
+// __code SysConfig sysConfig = {
+//     .keyConfig = {
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x03,
+//             0x40},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x01,
+//             0x20},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x01,
+//             0x02},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x00,
+//             0x40},
 
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x03,
-            0x80},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x00,
-            0x01},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x00,
-            0x20},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x00,
-            0x10},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x03,
+//             0x80},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x00,
+//             0x01},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x00,
+//             0x20},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x00,
+//             0x10},
 
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x00,
-            0x02},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x02,
-            0x01},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x01,
-            0x80},
-        {GamepadButton_Indexed,
-            0x00,
-            0x00,
-            0x01,
-            0x40}}};
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x00,
+//             0x02},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x02,
+//             0x01},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x01,
+//             0x80},
+//         {GamepadButton_Indexed,
+//             0x00,
+//             0x00,
+//             0x01,
+//             0x40}}};
 
 /*
  * 加载系统配置
  */
-// void sysLoadConfig()
-// {
-//   memset(&sysConfig, 0x00, sizeof(SysConfig));
-//   uint8_t i, point = 0;
-//   // uint16_t tmp = 0, addr = 0;
-//   for (i = 0; i < KEY_COUNT; i++)
-//   {
-//     KEY_CFG(i).mode = romRead8i(point++);
-//     // tmp = romRead16i(0x08 + i * 4);         // BTx
-//     // KEY_CFG(i).marco = (tmp & 0x8000) != 0;
-//     KEY_CFG(i).codeHH = romRead8i(point++);
-//     KEY_CFG(i).codeHL = romRead8i(point++);
-//     // tmp = romRead16i(0x0A + i * 4);     // BTxL
-//     KEY_CFG(i).codeLH = romRead8i(point++);
-//     KEY_CFG(i).codeLL = romRead8i(point++);
-//   }
-// }
+void sysLoadConfig()
+{
+  memset(&sysConfig, 0x00, sizeof(SysConfig));
+  uint8_t i, point = 0;
+  // uint16_t tmp = 0, addr = 0;
+  for (i = 0; i < KEY_COUNT; i++)
+  {
+    KEY_CFG(i).mode = romRead8i(point++);
+    // tmp = romRead16i(0x08 + i * 4);         // BTx
+    // KEY_CFG(i).marco = (tmp & 0x8000) != 0;
+    KEY_CFG(i).codeHH = romRead8i(point++);
+    KEY_CFG(i).codeHL = romRead8i(point++);
+    // tmp = romRead16i(0x0A + i * 4);     // BTxL
+    KEY_CFG(i).codeLH = romRead8i(point++);
+    KEY_CFG(i).codeLL = romRead8i(point++);
+  }
+}
 
 /*
  * 获取系统配置指针

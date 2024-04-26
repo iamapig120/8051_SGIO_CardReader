@@ -108,6 +108,6 @@ typedef struct
 // void       sysLoadConfig();
 SysConfig *sysGetConfig();
 
-extern __code SysConfig sysConfig;
+// extern __code SysConfig sysConfig;
 
 #endif

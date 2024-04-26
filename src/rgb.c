@@ -1,38 +1,40 @@
 #include "rgb.h"
 
 #ifdef LEDTYPE_WS2812
-static uint32_i rgbGRBData[LED_COUNT];
+static uint32_i rgbGRBData[2];
+uint8_t  isLedDataChanged = 0;
 
 void __ws2812_init()
 {
-  LED_IO = 0;
+  LED_IO   = 0;
+  LED_2_IO = 0;
 }
-void __ws2812_send(uint32_t value)
+void __ws2812_send(uint32_t value, __sbit led_io)
 {
   uint8_t i, j;
   for (i = 0; i < 24; i++)
   {
     if (value & 0x800000)
     {
-      LED = 1;
+      led_io = 1;
       for (j = 4; j > 0; j--)
         __asm__("nop");
-      LED = 0;
+      led_io = 0;
       for (j = 1; j > 0; j--)
         __asm__("nop");
     }
     else
     {
-      LED = 1;
+      led_io = 1;
       for (j = 1; j > 0; j--)
         __asm__("nop");
-      LED = 0;
+      led_io = 0;
       for (j = 4; j > 0; j--)
         __asm__("nop");
     }
     value <<= 1;
   }
-  LED_IO = 0;
+  led_io = 0;
 }
 #endif
 
@@ -60,9 +62,8 @@ void rgbPush()
 #ifdef LEDTYPE_WS2812
   E_DIS = 1;
   __ws2812_init();
-  uint8_t i;
-  for (i = 0; i < LED_COUNT; i++)
-    __ws2812_send(rgbGRBData[i]);
+  __ws2812_send(rgbGRBData[0], LED_IO);
+  __ws2812_send(rgbGRBData[1], LED_2_IO);
   E_DIS = 0;
 #endif
 }

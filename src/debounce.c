@@ -22,6 +22,15 @@ static __data uint16_t      debResult = 0;            // 按键状态
   {                                                              \
     debResult &= ~(1 << (k - 1));                                \
   }
+#define __debounce_key_without_check(k)                          \
+  if (debBuffer[k] == 0xFE || debBuffer[k] == 0x00)      \
+  {                                                              \
+    debResult |= 1 << (k);                                   \
+  }                                                              \
+  else if (debBuffer[k] == 0x01 || debBuffer[k] == 0xFF) \
+  {                                                              \
+    debResult &= ~(1 << (k));                                \
+  }
 #define __debounce_touchkey(k)                                   \
   debBuffer[k - 1] <<= 1;                                        \
   debBuffer[k - 1] |= (Touch_State >> (k + 1)) & 1;              \
@@ -56,11 +65,113 @@ void debounceUpdate()
   __debounce_pin(2);
   __debounce_pin(3);
 #elif defined(SEGA_IO_BOARD)
-  __debounce_pin(1);
-  __debounce_pin(2);
-  __debounce_pin(3);
-  __debounce_pin(4);
-  __debounce_pin(5);
+  // ROW1 = 1;
+  // delay_us(40);
+  // debBuffer[0] <<= 1;
+  // debBuffer[0] |= (COL1 == 0)?1:0;
+  // __debounce_key_without_check(0);
+  // debBuffer[1] <<= 1;
+  // debBuffer[1] |= (COL2 == 0)?1:0;
+  // __debounce_key_without_check(1);
+  // debBuffer[2] <<= 1;
+  // debBuffer[2] |= (COL3 == 0)?1:0;
+  // __debounce_key_without_check(2);
+  // debBuffer[3] <<= 1;
+  // debBuffer[3] |= (COL4 == 0)?1:0;
+  // __debounce_key_without_check(3);
+  // ROW1 = 0;
+
+  // ROW2 = 1;
+  // delay_us(40);
+  // debBuffer[4] <<= 1;
+  // debBuffer[4] |= (COL1 == 0)?1:0;
+  // __debounce_key_without_check(4);
+  // debBuffer[5] <<= 1;
+  // debBuffer[5] |= (COL2 == 0)?1:0;
+  // __debounce_key_without_check(5);
+  // debBuffer[6] <<= 1;
+  // debBuffer[6] |= (COL3 == 0)?1:0;
+  // __debounce_key_without_check(6);
+  // debBuffer[7] <<= 1;
+  // debBuffer[7] |= (COL4 == 0)?1:0;
+  // __debounce_key_without_check(7);
+  // ROW2 = 0;
+
+  // ROW3 = 1;
+  // delay_us(40);
+  // debBuffer[8] <<= 1;
+  // debBuffer[8] |= (COL1 == 0)?1:0;
+  // __debounce_key_without_check(8);
+  // debBuffer[9] <<= 1;
+  // debBuffer[9] |= (COL2 == 0)?1:0;
+  // __debounce_key_without_check(9);
+  // debBuffer[10] <<= 1;
+  // debBuffer[10] |= (COL3 == 0)?1:0;
+  // __debounce_key_without_check(10);
+  // debBuffer[11] <<= 1;
+  // debBuffer[11] |= (COL4 == 0)?1:0;
+  // __debounce_key_without_check(11);
+  // ROW3 = 0;
+  static uint8_t index = 0;
+  switch (index)
+  {
+  case 0:
+    debBuffer[3] <<= 1;
+    debBuffer[3] |= ROW1;
+    __debounce_key_without_check(3);
+    debBuffer[7] <<= 1;
+    debBuffer[7] |= ROW2;
+    __debounce_key_without_check(7);
+    debBuffer[10] <<= 1;
+    debBuffer[10] |= ROW3;
+    __debounce_key_without_check(10);
+    COL4 = 1;
+    COL1 = 0;
+    break;
+  case 1:
+    debBuffer[0] <<= 1;
+    debBuffer[0] |= ROW1;
+    __debounce_key_without_check(0);
+    debBuffer[4] <<= 1;
+    debBuffer[4] |= ROW2;
+    __debounce_key_without_check(4);
+    debBuffer[8] <<= 1;
+    debBuffer[8] |= ROW3;
+    __debounce_key_without_check(8);
+    COL1 = 1;
+    COL2 = 0;
+    break;
+  case 2:
+    debBuffer[1] <<= 1;
+    debBuffer[1] |= ROW1;
+    __debounce_key_without_check(1);
+    debBuffer[5] <<= 1;
+    debBuffer[5] |= ROW2;
+    __debounce_key_without_check(5);
+    debBuffer[9] <<= 1;
+    debBuffer[9] |= ROW3;
+    __debounce_key_without_check(9);
+    COL2 = 1;
+    COL3 = 0;
+    break;
+  case 3:
+    debBuffer[2] <<= 1;
+    debBuffer[2] |= ROW1;
+    __debounce_key_without_check(2);
+    debBuffer[6] <<= 1;
+    debBuffer[6] |= ROW2;
+    __debounce_key_without_check(6);
+    debBuffer[10] <<= 1;
+    debBuffer[10] |= ROW3;
+    __debounce_key_without_check(10);
+    COL3 = 1;
+    COL4 = 0;
+    break;
+  }
+  index++;
+  if(index == 4){
+    index = 0;
+  }
 #endif
 #endif
 #elif defined SIMPAD_TOUCH
@@ -98,6 +209,34 @@ void debounceInit()
   __set_pin(3);
   __set_pin(4);
 #elif defined(SEGA_IO_BOARD)
+  // ROW1 = 0;
+  // ROW2 = 0;
+  // ROW3 = 0;
+
+  // P3_MOD_OC &= 0xF4;
+  // P3_DIR_PU &= 0xF4;
+
+  // P1_MOD_OC &= 0xCC;
+  // P1_DIR_PU &= 0xCC;
+
+  // P3_MOD_OC &= 0x2F;
+  // P3_DIR_PU &= 0x2F;
+
+  P1_MOD_OC &= 0x10;
+
+  // COL1 = 0;
+  // COL2 = 0;
+  // COL3 = 0;
+  // COL4 = 0;
+
+  ROW1 = 1;
+  ROW2 = 1;
+  ROW3 = 1;
+
+  COL1 = 1;
+  COL2 = 1;
+  COL3 = 1;
+  COL4 = 1;
   // Init CMD
 #endif
 #endif
