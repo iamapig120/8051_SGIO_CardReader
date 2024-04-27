@@ -20,7 +20,7 @@ void _wakeup()
   return;
 }
 
-int8_t getResponseLength(uint8_t buf[], uint8_t len, uint16_t timeout)
+uint8_t getResponseLength(uint8_t buf[], uint8_t len, uint16_t timeout)
 {
   uint8_t i;
   sysMsCounter = 0;

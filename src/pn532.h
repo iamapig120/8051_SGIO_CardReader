@@ -121,9 +121,9 @@
 #define FELICA_WRITE_MAX_BLOCK_NUM 10 // for typical FeliCa card
 #define FELICA_REQ_SERVICE_MAX_NODE_NUM 32
 
-// void     begin();
-// uint32_t getFirmwareVersion(void);
-// uint8_t  readPassiveTargetID(uint8_t cardbaudrate, uint8_t *uid, uint8_t *uidLength, uint16_t timeout, uint8_t inlist);
-// int8_t   felica_Polling(uint16_t systemCode, uint8_t requestCode, uint8_t *idm, uint8_t *pmm, uint16_t *systemCodeResponse, uint16_t timeout);
+void     begin();
+uint32_t getFirmwareVersion(void);
+uint8_t  readPassiveTargetID(uint8_t cardbaudrate, uint8_t *uid, uint8_t *uidLength, uint16_t timeout, uint8_t inlist);
+int8_t   felica_Polling(uint16_t systemCode, uint8_t requestCode, uint8_t *idm, uint8_t *pmm, uint16_t *systemCodeResponse, uint16_t timeout);
 
 #endif

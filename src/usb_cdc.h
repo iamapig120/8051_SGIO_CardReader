@@ -35,7 +35,7 @@ void CDC_UART_Poll(void);
 void USB_EP2_IN_cb(void);
 void USB_EP2_OUT_cb(void);
 
-// void USB_EP3_IN_cb(void);
-// void USB_EP3_OUT_cb(void);
+void USB_EP3_IN_cb(void);
+void USB_EP3_OUT_cb(void);
 
 #endif
