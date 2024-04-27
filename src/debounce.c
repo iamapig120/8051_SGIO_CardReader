@@ -222,7 +222,7 @@ void debounceInit()
   // P3_MOD_OC &= 0x2F;
   // P3_DIR_PU &= 0x2F;
 
-  P1_MOD_OC &= 0x10;
+  // P1_MOD_OC &= 0x10;
 
   // COL1 = 0;
   // COL2 = 0;
