@@ -1,8 +1,8 @@
 {
   "C_Cpp.default.configurationProvider": "cl.eide",
   "files.associations": {
-    "Main.C": "cpp",
-    "TouchKey.C": "cpp",
+    "Main.C": "c",
+    "TouchKey.C": "c",
     "ch552.h": "c",
     "bsp.h": "c",
     "string.h": "c",
