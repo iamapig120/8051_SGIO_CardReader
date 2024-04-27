@@ -21,7 +21,11 @@
   },
   "targets": {
     "Debug": {
-      "excludeList": [],
+      "excludeList": [
+        "src/pn532_i2c.c",
+        "src/pn532.c",
+        "src/touchkey.c"
+      ],
       "toolchain": "SDCC",
       "compileConfig": {
         "options": "null"

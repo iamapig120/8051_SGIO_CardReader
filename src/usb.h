@@ -12,11 +12,11 @@ void usbReleaseAll(); // 清除上传缓冲区
 
 void Enp1IntIn(); // 上传按键数据
 
-#define ENDP0_BUFFER_SIZE 64 // 端点0 缓冲区大小
-#define ENDP1_BUFFER_SIZE 64 // 端点1 缓冲区大小；键盘、音频控制器、手柄 端点最大缓冲大小
-#define ENDP2_BUFFER_SIZE 64 // 端点2 缓冲区大小；CDC 设备数据缓冲大小
-#define ENDP3_BUFFER_SIZE 64 // 端点3 缓冲区大小；HID 自定义设备数据缓冲大小
-#define ENDP4_BUFFER_SIZE 64 // 端点4 缓冲区大小；CDC 设备数据缓冲大小
+#define ENDP0_BUFFER_SIZE 8 // 端点0 缓冲区大小
+#define ENDP1_BUFFER_SIZE 64 // 端点1 缓冲区大小；SGIO
+#define ENDP2_BUFFER_SIZE 32 // 端点2 缓冲区大小；CDC 设备数据缓冲大小
+#define ENDP3_BUFFER_SIZE 32 // 端点3 缓冲区大小；CDC 设备数据缓冲大小
+// #define ENDP4_BUFFER_SIZE 32 // 端点4 缓冲区大小；HID 自定义设备数据缓冲大小
 
 extern __xdata __at(0x0000) uint8_t Ep0Buffer[];                                                                                    // 端点0 OUT&IN缓冲区
 // extern __xdata __at(ENDP0_BUFFER_SIZE) uint8_t Ep4BufferOut[];                                                                      // 端点4 OUT缓冲区

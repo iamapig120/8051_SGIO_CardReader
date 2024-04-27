@@ -120,7 +120,7 @@ const uint8_c usbCfgDesc[] = {
     0x09,                 //   bLength
     USB_DESCR_TYP_CONFIG, //   bDescriptorType (Configuration)
     0xAD, 0x00,           //   wTotalLength 173
-    0x06,                 //   bNumInterfaces 6 (6接口 1_SGIO 23_CDC 45_CDC)
+    0x05,                 //   bNumInterfaces 6 (6接口 1_SGIO 23_CDC 45_CDC)
     0x01,                 //   bConfigurationValue
     0x04,                 //   iConfiguration (String Index)
     0x80,                 //   Attributes, D7 must be 1, D6 Self-powered, D5 Remote Wakeup, D4-D0=0

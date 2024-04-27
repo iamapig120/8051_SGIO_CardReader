@@ -20,9 +20,7 @@
                 "--model-small",
                 "--opt-code-size"
             ]
-        },
-        "stack-auto": true,
-        "use-external-stack": true
+        }
     },
     "c/cpp-compiler": {
         "language-c": "c99",
@@ -32,6 +30,6 @@
     "linker": {
         "$mainFileName": "main",
         "output-format": "hex",
-        "misc-controls": "--xram-loc 0x01C0 --iram-size 0x0100 --code-size 0x8000 --xram-size 0x8000"
+        "misc-controls": "--xram-loc 0x0108 --iram-size 0x0100 --code-size 0x4000 --xram-size 0x02F8"
     }
 }
