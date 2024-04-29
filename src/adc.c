@@ -4,7 +4,7 @@
 uint8_x adc_buff[]  = {0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80};
 uint8_t adc_pointer = 0;
 
-uint16_t adc_var = 0x8000;
+uint16_t adc_var = 0x4800;
 /*******************************************************************************
 * Function Name  : ADCInit(UINT8 div)
 * Description    : ADC采样时钟设置,模块开启，中断开启

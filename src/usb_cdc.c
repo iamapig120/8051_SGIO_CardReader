@@ -1,20 +1,20 @@
 #include "usb_cdc.h"
 #include "ch552.h"
-// #include "pn532.h"
 #include "rgb.h"
 #include "usb.h"
 #include <string.h>
 
-#include "pn532_i2c.h"
+// #include "pn532.h"
+// #include "pn532_i2c.h"
 
 // 初始化波特率为115200，1停止位，无校验，8数据位。
 // uint8_x __at(LINECODING_ADDR) LineCoding[LINECODING_SIZE];
-uint8_x LineCoding[LINECODING_SIZE];
+uint8_x LineCoding[LINECODING_SIZE] = {0x00, 0xC2, 0x01, 0x00, 0x00, 0x00, 0x08};
 
 // CDC Tx
-uint8_x                  CDC1_PutCharBuf[CDC_PUTCHARBUF_LEN]; // The buffer for CDC1_PutChar
-volatile uint8_t         CDC1_PutCharBuf_Last  = 0;           // Point to the last char in the buffer
-volatile uint8_t         CDC1_PutCharBuf_First = 0;           // Point to the first char in the buffer
+uint8_x          CDC1_PutCharBuf[CDC_PUTCHARBUF_LEN]; // The buffer for CDC1_PutChar
+volatile uint8_t CDC1_PutCharBuf_Last  = 0;           // Point to the last char in the buffer
+volatile uint8_t CDC1_PutCharBuf_First = 0;           // Point to the first char in the buffer
 volatile uint8_t CDC1_Tx_Busy          = 0;
 volatile uint8_t CDC1_Tx_Full          = 0;
 
@@ -32,33 +32,35 @@ volatile uint8_t CDC2_Rx_Pending = 0; // Number of bytes need to be processed be
 volatile uint8_t CDC2_Rx_CurPos  = 0;
 
 // SG COM Response
-uint8_x CDC1_RequestPacketPos = 0;
+uint8_t CDC1_RequestPacketPos = 0;
 uint8_x CDC1_RequestPacketBuf[256];
-uint8_x CDC2_RequestPacketPos = 0;
+uint8_t CDC2_RequestPacketPos = 0;
 uint8_x CDC2_RequestPacketBuf[64];
 
 uint8_x CDC_ResponseStringBuf[64]; // The buffer for Response
 
-IO_Packet    *LED_req  = (IO_Packet *)CDC1_RequestPacketBuf;
-AIME_Request *AIME_req = (AIME_Request *)CDC2_RequestPacketBuf;
+// IO_Packet    *LED_req  = (IO_Packet *)CDC1_RequestPacketBuf;
+// AIME_Request *AIME_req = (AIME_Request *)CDC2_RequestPacketBuf;
 
-IO_Packet     *LED_res  = (IO_Packet *)CDC_ResponseStringBuf;
-AIME_Response *AIME_res = (AIME_Response *)CDC_ResponseStringBuf;
+// IO_Packet     *LED_res  = (IO_Packet *)CDC_ResponseStringBuf;
+// AIME_Response *AIME_res = (AIME_Response *)CDC_ResponseStringBuf;
 
 // CDC configuration
 extern uint8_t UsbConfig;
-uint32_t       CDC_Baud = 0; // The baud rate
+uint32_x       CDC_Baud = 0; // The baud rate
 
-void CDC_InitBaud(void)
-{
-  LineCoding[0] = 0x00;
-  LineCoding[1] = 0xC2;
-  LineCoding[2] = 0x01;
-  LineCoding[3] = 0x00;
-  LineCoding[4] = 0x00;
-  LineCoding[5] = 0x00;
-  LineCoding[6] = 0x08;
-}
+uint8_t CDC_Data_Callback_State = 0;
+
+// void CDC_InitBaud(void)
+// {
+//   LineCoding[0] = 0x00;
+//   LineCoding[1] = 0xC2;
+//   LineCoding[2] = 0x01;
+//   LineCoding[3] = 0x00;
+//   LineCoding[4] = 0x00;
+//   LineCoding[5] = 0x00;
+//   LineCoding[6] = 0x08;
+// }
 
 void CDC_SetBaud(void)
 {
@@ -96,30 +98,30 @@ void USB_EP2_OUT_cb(void)
   UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
 }
 
-void USB_EP3_OUT_cb(void)
-{
-  CDC2_Rx_Pending = USB_RX_LEN;
-  CDC2_Rx_CurPos  = 0; // Reset Rx pointer
-  // Reject packets by replying NAK, until uart_poll() finishes its job, then it informs the USB peripheral to accept incoming packets
-  UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
-}
+// void USB_EP3_OUT_cb(void)
+// {
+//   CDC2_Rx_Pending = USB_RX_LEN;
+//   CDC2_Rx_CurPos  = 0; // Reset Rx pointer
+//   // Reject packets by replying NAK, until uart_poll() finishes its job, then it informs the USB peripheral to accept incoming packets
+//   UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
+// }
 
-void USB_EP3_IN_cb(void)
-{
-  UEP3_T_LEN = 0; // 预使用发送长度一定要清空
-  if (CDC2_Tx_Full)
-  {
-    // Send a zero-length-packet(ZLP) to end this transfer
-    UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // ACK next IN transfer
-    CDC2_Tx_Full = 0;
-    // CDC1_Tx_Busy remains set until the next ZLP sent to the host
-  }
-  else
-  {
-    UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
-    CDC2_Tx_Busy = 0;
-  }
-}
+// void USB_EP3_IN_cb(void)
+// {
+//   UEP3_T_LEN = 0; // 预使用发送长度一定要清空
+//   if (CDC2_Tx_Full)
+//   {
+//     // Send a zero-length-packet(ZLP) to end this transfer
+//     UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // ACK next IN transfer
+//     CDC2_Tx_Full = 0;
+//     // CDC1_Tx_Busy remains set until the next ZLP sent to the host
+//   }
+//   else
+//   {
+//     UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
+//     CDC2_Tx_Busy = 0;
+//   }
+// }
 
 void CDC1_PutChar(uint8_t tdata)
 {
@@ -321,104 +323,106 @@ void CDC_USB_Poll()
   }
 }
 
-void ledBoardOnPackect()
+void ledBoardOnPackect(IO_Packet *reqPacket)
 {
-  uint8_t checksum, i; // Response flag, also use for checksum & i
+  uint8_t    checksum, i; // Response flag, also use for checksum & i
+  IO_Packet *resPackect = (IO_Packet *)CDC_ResponseStringBuf;
 
   memset(CDC_ResponseStringBuf, 0x00, 64); // Clear resPackect
 
-  LED_res->sync      = 0xE0;
-  LED_res->srcNodeId = LED_req->dstNodeId;
-  LED_res->dstNodeId = LED_req->srcNodeId;
+  resPackect->sync      = 0xE0;
+  resPackect->srcNodeId = reqPacket->dstNodeId;
+  resPackect->dstNodeId = reqPacket->srcNodeId;
 
-  LED_res->response.status  = ACK_OK;
-  LED_res->response.report  = REPORT_OK;
-  LED_res->response.command = LED_req->request.command;
+  resPackect->response.status  = ACK_OK;
+  resPackect->response.report  = REPORT_OK;
+  resPackect->response.command = reqPacket->request.command;
 
-  switch (LED_req->request.command)
+  switch (reqPacket->request.command)
   {
   case CMD_RESET:
     // TODO
-    // rgbSet(3, 0x00000000);
-    // rgbSet(3, 0x00000000);
+    rgbSet(0, 0x00000000);
+    rgbSet(0, 0x00000000);
+    isLedDataChanged |= 0x02;
     // rgbPush();
-    LED_res->length = 0;
+    resPackect->length = 0;
     break;
   case CMD_SET_TIMEOUT:
-    LED_res->response.data[0] = LED_req->request.data[0];
-    LED_res->response.data[1] = LED_req->request.data[1];
-    LED_res->length           = 2;
+    resPackect->response.data[0] = reqPacket->request.data[0];
+    resPackect->response.data[1] = reqPacket->request.data[1];
+    resPackect->length           = 2;
     break;
   case CMD_SET_DISABLE:
-    LED_res->response.data[0] = LED_req->request.data[0];
-    LED_res->length           = 1;
+    resPackect->response.data[0] = reqPacket->request.data[0];
+    resPackect->length           = 1;
     break;
   case CMD_EXT_BOARD_SET_LED_RGB_DIRECT:
-    rgbSet(1, ((uint32_t)(LED_req->response.data[178]) << 16) | ((uint32_t)(LED_req->response.data[179]) << 8) | (uint32_t)(LED_req->response.data[180])); // Right
-    rgbSet(0, (uint32_t)(LED_req->response.data[1]) << 16 | (uint32_t)(LED_req->response.data[2] << 8) | (uint32_t)(LED_req->response.data[3]));           // Left
-    // rgbPush();
+    rgbSet(1, ((uint32_t)(reqPacket->response.data[178]) << 16) | ((uint32_t)(reqPacket->response.data[179]) << 8) | (uint32_t)(reqPacket->response.data[180])); // Right
+    rgbSet(0, (uint32_t)(reqPacket->response.data[1]) << 16 | (uint32_t)(reqPacket->response.data[2] << 8) | (uint32_t)(reqPacket->response.data[3]));       // Left
     isLedDataChanged |= 0x02;
+    // rgbPush();
     return;
     break;
   case CMD_EXT_BOARD_INFO:
-    memcpy(LED_res->response.data, "15093-06", 8);
-    LED_res->response.data[8] = 0x0A;
-    memcpy(LED_res->response.data + 9, "6710A", 5);
-    LED_res->response.data[14] = 0xFF;
-    LED_res->response.data[15] = 0xA0; // revision
-    LED_res->length            = 0x10;
+    memcpy(resPackect->response.data, "15093-06", 8);
+    resPackect->response.data[8] = 0x0A;
+    memcpy(resPackect->response.data + 9, "6710A", 5);
+    resPackect->response.data[14] = 0xFF;
+    resPackect->response.data[15] = 0xA0; // revision
+    resPackect->length            = 0x10;
     break;
   case CMD_EXT_BOARD_STATUS:
-    LED_res->response.data[0] = 0x00; // boardFlag
-    LED_res->response.data[1] = 0x00; // uartFlag
-    LED_res->response.data[2] = 0x00; // cmdFlag
-    LED_res->length           = 0x03;
+    resPackect->response.data[0] = 0x00; // boardFlag
+    resPackect->response.data[1] = 0x00; // uartFlag
+    resPackect->response.data[2] = 0x00; // cmdFlag
+    resPackect->length           = 0x03;
     break;
   case CMD_EXT_FIRM_SUM:
-    LED_res->response.data[0] = 0xAA;
-    LED_res->response.data[1] = 0x53;
-    LED_res->length           = 0x02;
+    resPackect->response.data[0] = 0xAA;
+    resPackect->response.data[1] = 0x53;
+    resPackect->length           = 0x02;
     break;
   case CMD_EXT_PROTOCOL_VERSION:
-    LED_res->response.data[0] = 0x01;
-    LED_res->response.data[1] = 0x01; // major
-    LED_res->response.data[2] = 0x00; // minor
-    LED_res->length           = 0x03;
+    resPackect->response.data[0] = 0x01;
+    resPackect->response.data[1] = 0x01; // major
+    resPackect->response.data[2] = 0x00; // minor
+    resPackect->length           = 0x03;
     break;
   default:
-    LED_res->response.status = ACK_INVALID;
-    LED_res->length          = 0x00;
+    resPackect->response.status = ACK_INVALID;
+    resPackect->length          = 0x00;
     break;
   }
 
   checksum = 0;
 
-  LED_res->length += 3;
+  resPackect->length += 3;
 
-  checksum += LED_res->dstNodeId;
-  checksum += LED_res->srcNodeId;
-  checksum += LED_res->length;
-  checksum += LED_res->response.status;
-  checksum += LED_res->response.command;
-  checksum += LED_res->response.report;
+  checksum += resPackect->dstNodeId;
+  checksum += resPackect->srcNodeId;
+  checksum += resPackect->length;
+  checksum += resPackect->response.status;
+  checksum += resPackect->response.command;
+  checksum += resPackect->response.report;
 
-  for (i = 0; i < LED_res->length - 3; i++)
+  for (i = 0; i < resPackect->length - 3; i++)
   {
-    checksum += LED_res->response.data[i];
+    checksum += resPackect->response.data[i];
   }
-  LED_res->response.data[LED_res->length - 3] = checksum;
+  resPackect->response.data[resPackect->length - 3] = checksum;
 
-  CDC1_PutChar(LED_res->sync);
-  for (i = 1; i < LED_res->length + 5; i++)
+  CDC1_PutChar(resPackect->sync);
+  for (i = 1; i < resPackect->length + 5; i++)
   {
-    if (LED_res->buffer[i] == 0xE0 || LED_res->buffer[i] == 0xD0)
+    if (resPackect->buffer[i] == 0xE0 || resPackect->buffer[i] == 0xD0)
     {
       CDC1_PutChar(0xD0);
-      CDC1_PutChar(LED_res->buffer[i] - 1);
+      CDC1_PutChar(resPackect->buffer[i] - 1);
     }
     else
     {
-      CDC1_PutChar(LED_res->buffer[i]);
+      CDC1_PutChar(resPackect->buffer[i]);
     }
   }
 }
@@ -426,27 +430,27 @@ void ledBoardOnPackect()
 uint8_c HIRATE_FW_VERSION[]  = {'\x94'};
 uint8_c LOWRATE_FW_VERSION[] = {'T', 'N', '3', '2', 'M', 'S', 'E', 'C', '0', '0', '3', 'S', ' ', 'F', '/', 'W', ' ', 'V', 'e', 'r', '1', '.', '2'};
 
-uint8_c CARD_READER_VERSION[] = "837-15396";
+uint8_c CARD_READER_VERSION[]   = "837-15396";
 uint8_c CARD_READER_VERSION_2[] = "TN32MSEC003S H/W Ver3.0";
 
-uint8_c CARD_READER_EXTRA_INFO[] = "000-00000\xFF\x11\x40";
+uint8_c CARD_READER_EXTRA_INFO[]   = "000-00000\xFF\x11\x40";
 uint8_c CARD_READER_EXTRA_INFO_2[] = "15084\xFF\x10\x00\x12";
 
-static uint8_x AimeKey[6], BanaKey[6];
-
-void cardReaderOnPackect()
+void cardReaderOnPackect(AIME_Request *req)
 {
   uint8_t        checksum, i; // Response flag, also use for checksum & i
+  AIME_Response *res = (AIME_Response *)CDC_ResponseStringBuf;
+  static uint8_x AimeKey[6], BanaKey[6];
   uint16_t       SystemCode;
 
   memset(CDC_ResponseStringBuf, 0x00, 64); // Clear resPackect
 
-  AIME_res->addr   = AIME_req->addr;
-  AIME_res->seq_no = AIME_req->seq_no;
-  AIME_res->cmd    = AIME_req->cmd;
-  AIME_res->status = 0;
+  res->addr   = req->addr;
+  res->seq_no = req->seq_no;
+  res->cmd    = req->cmd;
+  res->status = 0;
 
-  switch (AIME_req->cmd)
+  switch (req->cmd)
   {
   case CMD_TO_NORMAL_MODE:
     // _writeCommand(CDC2_RequestPacketBuf, 0, CDC_ResponseStringBuf, 0);
@@ -456,32 +460,32 @@ void cardReaderOnPackect()
     // }
     // else
     {
-      AIME_res->status = 0x01;
+      res->status = 0x01;
     }
-    AIME_res->payload_len = 0;
+    res->payload_len = 0;
     break;
   case CMD_GET_FW_VERSION:
     if (CDC_Baud == 115200)
     {
-      memcpy(AIME_res->version, HIRATE_FW_VERSION, sizeof(HIRATE_FW_VERSION));
-      AIME_res->payload_len = sizeof(HIRATE_FW_VERSION);
+      memcpy(res->version, HIRATE_FW_VERSION, sizeof(HIRATE_FW_VERSION));
+      res->payload_len = sizeof(HIRATE_FW_VERSION);
     }
     else
     {
-      memcpy(AIME_res->version, LOWRATE_FW_VERSION, sizeof(LOWRATE_FW_VERSION));
-      AIME_res->payload_len = sizeof(LOWRATE_FW_VERSION);
+      memcpy(res->version, LOWRATE_FW_VERSION, sizeof(LOWRATE_FW_VERSION));
+      res->payload_len = sizeof(LOWRATE_FW_VERSION);
     }
     break;
   case CMD_GET_HW_VERSION:
     if (CDC_Baud == 115200)
     {
-      memcpy(AIME_res->version, CARD_READER_VERSION, 9);
-      AIME_res->payload_len = 9;
+      memcpy(res->version, CARD_READER_VERSION, 9);
+      res->payload_len = 9;
     }
     else
     {
-      memcpy(AIME_res->version, CARD_READER_VERSION_2, 23);
-      AIME_res->payload_len = 23;
+      memcpy(res->version, CARD_READER_VERSION_2, 23);
+      res->payload_len = 23;
     }
 
     break;
@@ -507,35 +511,35 @@ void cardReaderOnPackect()
     // else
     {
 
-      AIME_res->payload_len = 1;
-      AIME_res->count       = 0;
+      res->payload_len = 1;
+      res->count       = 0;
       break;
     }
 
   case CMD_MIFARE_READ:
     // TODO
-    AIME_res->status = 0x01;
+    res->status = 0x01;
     break;
   case CMD_FELICA_THROUGH:
     // TODO
-    AIME_res->status = 0x01;
+    res->status = 0x01;
     break;
   case CMD_MIFARE_AUTHORIZE_B:
     // TODO
-    AIME_res->status = 0x01;
+    res->status = 0x01;
     break;
   case CMD_MIFARE_AUTHORIZE_A:
     // TODO
-    AIME_res->status = 0x01;
+    res->status = 0x01;
     break;
   case CMD_CARD_SELECT:
     // TODO
     break;
   case CMD_MIFARE_KEY_SET_B:
-    memcpy(AimeKey, AIME_req->key, 6);
+    memcpy(AimeKey, req->key, 6);
     break;
   case CMD_MIFARE_KEY_SET_A:
-    memcpy(BanaKey, AIME_req->key, 6);
+    memcpy(BanaKey, req->key, 6);
     break;
   case CMD_START_POLLING:
     // TODO
@@ -549,43 +553,43 @@ void cardReaderOnPackect()
   case CMD_EXT_BOARD_INFO:
     if (CDC_Baud == 115200)
     {
-      memcpy(AIME_res->info_payload, CARD_READER_EXTRA_INFO, 12);
-      AIME_res->payload_len = 12;
+      memcpy(res->info_payload, CARD_READER_EXTRA_INFO, 12);
+      res->payload_len = 12;
     }
     else
     {
-      memcpy(AIME_res->info_payload, CARD_READER_EXTRA_INFO_2, 9);
-      AIME_res->payload_len = 9;
+      memcpy(res->info_payload, CARD_READER_EXTRA_INFO_2, 9);
+      res->payload_len = 9;
     }
     break;
   case CMD_EXT_BOARD_SET_LED_RGB:
     // TODO
-    rgbSet(3, ((uint32_t)(AIME_req->color_payload[0]) << 16) | ((uint32_t)(AIME_req->color_payload[1]) << 8) | ((uint32_t)(AIME_req->color_payload[2])));
+    // rgbSet(3, ((uint32_t)(req->color_payload[0]) << 16) | ((uint32_t)(req->color_payload[1]) << 8) | ((uint32_t)(req->color_payload[2])));
     return;
     break;
   default:
     break;
   }
 
-  AIME_res->frame_len = 6 + AIME_res->payload_len;
-  checksum            = 0;
-  for (i = 0; i < AIME_res->frame_len; i++)
+  res->frame_len = 6 + res->payload_len;
+  checksum       = 0;
+  for (i = 0; i < res->frame_len; i++)
   {
-    checksum += AIME_res->buffer[i];
+    checksum += res->buffer[i];
   }
-  AIME_res->buffer[AIME_res->frame_len] = checksum;
+  res->buffer[res->frame_len] = checksum;
 
   CDC2_PutChar(0xE0);
-  for (i = 0; i <= AIME_res->frame_len; i++)
+  for (i = 0; i <= res->frame_len; i++)
   {
-    if (AIME_res->buffer[i] == 0xE0 || AIME_res->buffer[i] == 0xD0)
+    if (res->buffer[i] == 0xE0 || res->buffer[i] == 0xD0)
     {
       CDC2_PutChar(0xD0);
-      CDC2_PutChar(AIME_res->buffer[i] - 1);
+      CDC2_PutChar(res->buffer[i] - 1);
     }
     else
     {
-      CDC2_PutChar(AIME_res->buffer[i]);
+      CDC2_PutChar(res->buffer[i]);
     }
   }
 }
@@ -593,9 +597,10 @@ void cardReaderOnPackect()
 void CDC_UART_Poll()
 {
   uint8_t        cur_byte;
-  static uint8_t checksum       = 0;
-  static uint8_t cdc1_prev_byte = 0x00;
+  static uint8_t checksum = 0, cdc1_prev_byte = 0x00;
   static uint8_t cdc2_prev_byte = 0x00;
+  IO_Packet     *reqPackect  = (IO_Packet *)CDC1_RequestPacketBuf;
+  AIME_Request  *reqPackect2 = (AIME_Request *)CDC2_RequestPacketBuf;
 
   // If there are data pending
   while (CDC1_Rx_Pending)
@@ -603,9 +608,9 @@ void CDC_UART_Poll()
     cur_byte = EP2_OUT_BUF[CDC1_Rx_CurPos];
     if (cur_byte == 0xE0 & cdc1_prev_byte != 0xD0)
     {
-      checksum                                     = 0x20;
-      CDC1_RequestPacketPos                        = 0;
-      LED_req->length = 0xFF;
+      checksum              = 0x20;
+      CDC1_RequestPacketPos = 0;
+      reqPackect->length    = 0xFF;
     }
     else if (cdc1_prev_byte == 0xD0)
     {
@@ -626,11 +631,12 @@ void CDC_UART_Poll()
 
     CDC1_RequestPacketBuf[CDC1_RequestPacketPos] = cur_byte;
     CDC1_RequestPacketPos++;
-    if (CDC1_RequestPacketPos > 5 && CDC1_RequestPacketPos - 5 == LED_req->length)
+    if (CDC1_RequestPacketPos > 5 && CDC1_RequestPacketPos - 5 == reqPackect->length)
     {
       if (cur_byte == checksum)
       {
-        ledBoardOnPackect();
+        // ledBoardOnPackect(reqPackect);
+        CDC_Data_Callback_State |= 0x01;
       }
       else
       {
@@ -659,9 +665,9 @@ void CDC_UART_Poll()
     cur_byte = EP3_OUT_BUF[CDC2_Rx_CurPos];
     if (cur_byte == 0xE0 & cdc2_prev_byte != 0xD0)
     {
-      checksum                                           = 0x20;
-      CDC2_RequestPacketPos                              = 0;
-      AIME_req->frame_len = 0xFF;
+      checksum               = 0x20;
+      CDC2_RequestPacketPos  = 0;
+      reqPackect2->frame_len = 0xFF;
     }
     else if (cdc2_prev_byte == 0xD0)
     {
@@ -682,11 +688,12 @@ void CDC_UART_Poll()
 
     CDC2_RequestPacketBuf[CDC2_RequestPacketPos] = cur_byte;
     CDC2_RequestPacketPos++;
-    if (CDC2_RequestPacketPos > 6 && CDC2_RequestPacketPos - 2 == AIME_req->frame_len)
+    if (CDC2_RequestPacketPos > 6 && CDC2_RequestPacketPos - 2 == reqPackect2->frame_len)
     {
       if (cur_byte == checksum)
       {
-        // cardReaderOnPackect();
+        // cardReaderOnPackect(reqPackect2);
+        CDC_Data_Callback_State |= 0x02;
       }
       else
       {
@@ -707,5 +714,20 @@ void CDC_UART_Poll()
       UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
     }
     cdc2_prev_byte = cur_byte;
+  }
+}
+
+
+void CDC_data_check()
+{
+  if (CDC_Data_Callback_State & 0x01)
+  {
+    ledBoardOnPackect((IO_Packet *)CDC1_RequestPacketBuf);
+    CDC_Data_Callback_State &= ~0x01;
+  }
+  if (CDC_Data_Callback_State & 0x02)
+  {
+    cardReaderOnPackect((AIME_Request *)CDC2_RequestPacketBuf);
+    CDC_Data_Callback_State &= ~0x02;
   }
 }

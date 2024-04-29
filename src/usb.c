@@ -470,11 +470,11 @@ void __usbDeviceInterrupt() __interrupt(INT_NO_USB) __using(1)
     case UIS_TOKEN_OUT | 3: // endpoint 3# 中断端点下传
       if (U_TOG_OK)
       {
-        USB_EP3_OUT_cb();
+        // USB_EP3_OUT_cb();
       }
       break;
     case UIS_TOKEN_IN | 3:                                      // endpoint 3# 中断端点上传
-      USB_EP3_IN_cb();
+      // USB_EP3_IN_cb();
       break;
     case UIS_TOKEN_OUT | 2: // endpoint 2# 中断端点下传
       if (U_TOG_OK)

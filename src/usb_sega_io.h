@@ -51,7 +51,7 @@ void io4Init(void);
 extern DataReceive *dataReceive;
 extern DataUpload  *dataForUpload;
 
-extern uint8_t Ep1RequestReplay;
+// extern uint8_t Ep1RequestReplay;
 
 void USB_EP1_OUT_cb(void);
 

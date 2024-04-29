@@ -3,14 +3,14 @@
 
 #include "pn532_i2c.h"
 
-uint8_x *emety;
-uint8_x  _uid[7];       // ISO14443A uid
-uint8_x  _uidLen;       // uid len
-uint8_x  _key[6];       // Mifare Classic key
-uint8_x  inListedTag;   // Tg number of inlisted tag.
-uint8_x  _felicaIDm[8]; // FeliCa IDm (NFCID2)
-uint8_x  _felicaPMm[8]; // FeliCa PMm (PAD)
-uint8_x  pn532_packetbuffer[64];
+// uint8_x *emety;
+// uint8_x  _uid[7];       // ISO14443A uid
+// uint8_x  _uidLen;       // uid len
+// uint8_x  _key[6];       // Mifare Classic key
+// uint8_x  inListedTag;   // Tg number of inlisted tag.
+// uint8_x  _felicaIDm[8]; // FeliCa IDm (NFCID2)
+// uint8_x  _felicaPMm[8]; // FeliCa PMm (PAD)
+// uint8_x  pn532_packetbuffer[64];
 
 // void begin()
 // {

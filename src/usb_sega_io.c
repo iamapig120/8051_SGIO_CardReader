@@ -4,8 +4,8 @@
 #include "usb.h"
 
 uint8_c  bitPosMap[]      = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
-uint32_t ledData          = 0;
-uint32_t ledDataFor422    = 0;
+uint32_x ledData          = 0;
+__data uint32_t ledDataFor422    = 0;
 
 DataReceive *dataReceive;
 DataUpload  *dataForUpload;

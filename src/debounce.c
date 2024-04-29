@@ -43,7 +43,7 @@ static __data uint16_t      debResult = 0;            // 按键状态
     debResult &= ~(1 << (k - 1));                                \
   }
 
-uint8_t i = 0;
+// uint8_t i = 0;
 
 /*
  * 更新计算去抖

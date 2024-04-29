@@ -30,6 +30,6 @@
     "linker": {
         "$mainFileName": "main",
         "output-format": "hex",
-        "misc-controls": "--xram-loc 0x0108 --iram-size 0x0100 --code-size 0x4000 --xram-size 0x02F8"
+        "misc-controls": "--xram-loc 0x0188 --iram-size 0x0100 --code-size 0x3000 --xram-size 0x0278"
     }
 }

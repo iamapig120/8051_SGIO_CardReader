@@ -56,7 +56,7 @@ void main()
   SysConfig *cfg = sysGetConfig();
   // SysConfig *cfg = (&sysConfig);
 
-  CDC_InitBaud();
+  // CDC_InitBaud();
   usbDevInit();
   debounceInit();
   rgbInit();
@@ -81,34 +81,29 @@ void main()
   while (1)
   {
     while (sysMsCounter--)
-      debounceUpdate();
     {
-      if (ADC_START == 0)
+      debounceUpdate(); // 按键和去抖检测
+
+      // 灯光检测
+      // IIC 通讯灯光，主按键灯光
+      if (isLedDataChanged & 0x01)
       {
-        ADC_update();
-        ADC_START = 1;
+        ch422Fresh();
+        isLedDataChanged &= ~0x01;
       }
+      // 2812 灯光，侧键灯光
+      if (isLedDataChanged & 0x02)
+      {
+        rgbPush();
+        isLedDataChanged &= ~0x02;
+      }
+
       if (timer == 0)
       {
-        timer = 0x08FF; // 大约2.3s一个HID数据包
+        timer = 0x0600; // 大约1.5s一个HID数据包
         // isLedDataChanged |= 0x03; // 定期更新LED灯
         Enp1IntIn();
       }
-      // if ((timer & 0x007F) == 0x00) // 大约每秒更新8次灯光，单次更新约需要0.5ms
-      // {
-        // IIC 通讯灯光，主按键灯光
-        if (isLedDataChanged & 0x01)
-        {
-          ch422Fresh();
-          isLedDataChanged &= ~0x01;
-        }
-        // 2812 灯光，侧键灯光
-        if (isLedDataChanged & 0x02)
-        {
-          rgbPush();
-          isLedDataChanged &= ~0x02;
-        }
-      // }
       timer--;
     }
 
@@ -204,5 +199,12 @@ void main()
 
     CDC_USB_Poll();
     CDC_UART_Poll();
+    CDC_data_check();
+    // ADC 重采样
+    if (ADC_START == 0)
+    {
+      ADC_update();
+      ADC_START = 1;
+    }
   }
 }

@@ -23,11 +23,11 @@
 extern uint8_x LineCoding[];
 
 // CDC configuration
-extern uint32_t CDC_Baud;
+extern uint32_x CDC_Baud;
 
 #define CDC_PUTCHARBUF_LEN 32
 
-void CDC_InitBaud(void);
+// void CDC_InitBaud(void);
 void CDC_SetBaud(void);
 void CDC_USB_Poll(void);
 void CDC_UART_Poll(void);
@@ -35,7 +35,9 @@ void CDC_UART_Poll(void);
 void USB_EP2_IN_cb(void);
 void USB_EP2_OUT_cb(void);
 
-void USB_EP3_IN_cb(void);
-void USB_EP3_OUT_cb(void);
+// void USB_EP3_IN_cb(void);
+// void USB_EP3_OUT_cb(void);
+
+void CDC_data_check();
 
 #endif

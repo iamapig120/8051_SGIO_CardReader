@@ -1,7 +1,7 @@
 #include "rgb.h"
 
 #ifdef LEDTYPE_WS2812
-static uint32_t rgbGRBData[2];
+static uint32_x rgbGRBData[2];
 uint8_t  isLedDataChanged = 0;
 
 void __ws2812_init()

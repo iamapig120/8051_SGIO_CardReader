@@ -47,7 +47,7 @@ uint8_t __eeprom_read(uint16_t addr) {
     return data;
 }
 #else
-volatile __bit __rom_dummy;
+// volatile __bit __rom_dummy;
 #endif
 /* -------- 外部存储器驱动 -------- */
 
@@ -141,7 +141,7 @@ void romWrite8e(uint16_t addr, uint8_t data) {
 #if defined(HAS_ROM)
     __eeprom_write(addr, data);
 #else
-     __rom_dummy = addr == 0 && data == 0; // Dummy thing
+    // __rom_dummy = addr == 0 && data == 0; // Dummy thing
 #endif
 }
 
@@ -164,6 +164,6 @@ void romWrite16e(uint16_t addr, uint16_t data) {
     __eeprom_write(addr, (data >> 8) & 0xFF);
     __eeprom_write(addr + 1, data & 0xFF);
 #else
-    __rom_dummy = addr == 0 && data == 0; // Dummy thing
+    // __rom_dummy = addr == 0 && data == 0; // Dummy thing
 #endif
 }
