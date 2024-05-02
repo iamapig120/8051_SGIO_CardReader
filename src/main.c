@@ -57,7 +57,7 @@ void main()
   // SysConfig *cfg = (&sysConfig);
 
   // CDC_InitBaud();
-  usbDevInit();
+
   debounceInit();
   rgbInit();
   ch422Active();
@@ -67,12 +67,17 @@ void main()
 
   EA = 1; // 启用中断
 
-  delay_ms(100);
+  delay_ms(10);
 
+  usbDevInit();
   usbReleaseAll();
   io4Init();
 
   sysTickConfig();
+
+  // rgbSet(1, 0x00FFFFFF);
+  // rgbSet(0, 0x00FFFFFF);
+  // isLedDataChanged |= 0x02;
 
   // ADC_START = 1;
 
@@ -91,18 +96,26 @@ void main()
         ch422Fresh();
         isLedDataChanged &= ~0x01;
       }
-      // 2812 灯光，侧键灯光
-      if (isLedDataChanged & 0x02)
-      {
-        rgbPush();
-        isLedDataChanged &= ~0x02;
-      }
 
       if (timer == 0)
       {
         timer = 0x0600; // 大约1.5s一个HID数据包
         // isLedDataChanged |= 0x03; // 定期更新LED灯
         Enp1IntIn();
+
+        // 强制刷新灯光
+        ch422Fresh();
+        rgbPush();
+      }
+      // 每秒更新8次灯光
+      if (timer & 0x7F)
+      {
+        // 2812 灯光，侧键灯光
+        if (isLedDataChanged & 0x02)
+        {
+          rgbPush();
+          isLedDataChanged &= ~0x02;
+        }
       }
       timer--;
     }

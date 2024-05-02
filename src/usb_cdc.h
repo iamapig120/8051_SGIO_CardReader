@@ -3,6 +3,7 @@
 
 #include "ch552.h"
 #include "comio.h"
+#include "usb.h"
 
 // CDC bRequests:
 // bmRequestType = 0xA1
@@ -35,9 +36,12 @@ void CDC_UART_Poll(void);
 void USB_EP2_IN_cb(void);
 void USB_EP2_OUT_cb(void);
 
-// void USB_EP3_IN_cb(void);
-// void USB_EP3_OUT_cb(void);
+void USB_EP3_IN_cb(void);
+void USB_EP3_OUT_cb(void);
 
 void CDC_data_check();
+
+extern volatile uint8_t CDC1_Rx_Pending;
+extern volatile uint8_t CDC2_Rx_Pending;
 
 #endif

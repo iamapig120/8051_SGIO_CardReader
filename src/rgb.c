@@ -1,8 +1,9 @@
 #include "rgb.h"
+#include "usb_cdc.h"
 
 #ifdef LEDTYPE_WS2812
-static uint32_x rgbGRBData[2];
-uint8_t  isLedDataChanged = 0;
+static uint32_i rgbGRBData[2];
+uint8_t         isLedDataChanged = 0;
 
 void __ws2812_init()
 {
@@ -20,7 +21,7 @@ void __ws2812_send(uint32_t value)
       for (j = 4; j > 0; j--)
         __asm__("nop");
       LED_IO = 0;
-      for (j = 1; j > 0; j--)
+      for (j = 3; j > 0; j--)
         __asm__("nop");
     }
     else
@@ -29,7 +30,7 @@ void __ws2812_send(uint32_t value)
       for (j = 1; j > 0; j--)
         __asm__("nop");
       LED_IO = 0;
-      for (j = 4; j > 0; j--)
+      for (j = 6; j > 0; j--)
         __asm__("nop");
     }
     value <<= 1;
@@ -47,7 +48,7 @@ void __ws2812_send_p2(uint32_t value)
       for (j = 4; j > 0; j--)
         __asm__("nop");
       LED_2_IO = 0;
-      for (j = 1; j > 0; j--)
+      for (j = 3; j > 0; j--)
         __asm__("nop");
     }
     else
@@ -56,7 +57,7 @@ void __ws2812_send_p2(uint32_t value)
       for (j = 1; j > 0; j--)
         __asm__("nop");
       LED_2_IO = 0;
-      for (j = 4; j > 0; j--)
+      for (j = 6; j > 0; j--)
         __asm__("nop");
     }
     value <<= 1;
@@ -87,11 +88,37 @@ void rgbSet(uint8_t index, uint32_t value)
 void rgbPush()
 {
 #ifdef LEDTYPE_WS2812
+  // 阻断CDC接收
+  UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
+  UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
+
   E_DIS = 1;
   __ws2812_init();
   __ws2812_send(rgbGRBData[0]);
+  __ws2812_send(rgbGRBData[0]);
+  __ws2812_send(rgbGRBData[0]);
+  __ws2812_send(rgbGRBData[0]);
+  __ws2812_send(rgbGRBData[0]);
+  __ws2812_send(rgbGRBData[0]);
+
   __ws2812_send_p2(rgbGRBData[1]);
+  __ws2812_send_p2(rgbGRBData[1]);
+  __ws2812_send_p2(rgbGRBData[1]);
+  __ws2812_send_p2(rgbGRBData[1]);
+  __ws2812_send_p2(rgbGRBData[1]);
+  __ws2812_send_p2(rgbGRBData[1]);
+
   E_DIS = 0;
+
+  // 重启CDC接收
+  if (CDC1_Rx_Pending == 0)
+  {
+    UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
+  }
+  if (CDC2_Rx_Pending == 0)
+  {
+    UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_ACK;
+  }
 #endif
 }
 #endif

@@ -3,9 +3,9 @@
 #include "rgb.h"
 #include "usb.h"
 
-uint8_c  bitPosMap[]      = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
-uint32_x ledData          = 0;
-__data uint32_t ledDataFor422    = 0;
+uint8_c         bitPosMap[]   = {23, 20, 22, 19, 21, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+uint32_x        ledData       = 0;
+__data uint32_t ledDataFor422 = 0;
 
 DataReceive *dataReceive;
 DataUpload  *dataForUpload;
@@ -59,18 +59,18 @@ void USB_EP1_OUT_cb(void)
         for (i = 0; i < 3; i++)
         {
           ledDataFor422 <<= 1;
-          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3 + 2]) & 1;
+          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3]) & 1;
           ledDataFor422 <<= 1;
           ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3 + 1]) & 1;
           ledDataFor422 <<= 1;
-          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3]) & 1;
-          
+          ledDataFor422 |= (ledData >> bitPosMap[9 + i * 3 + 2]) & 1;
+
           ledDataFor422 <<= 1;
-          ledDataFor422 |= (ledData >> bitPosMap[i * 3 + 2]) & 1; // B
+          ledDataFor422 |= (ledData >> bitPosMap[i * 3]) & 1; // R
           ledDataFor422 <<= 1;
           ledDataFor422 |= (ledData >> bitPosMap[i * 3 + 1]) & 1; // G
           ledDataFor422 <<= 1;
-          ledDataFor422 |= (ledData >> bitPosMap[i * 3]) & 1; // R
+          ledDataFor422 |= (ledData >> bitPosMap[i * 3 + 2]) & 1; // B
         }
         isLedDataChanged |= 0x01;
         break;

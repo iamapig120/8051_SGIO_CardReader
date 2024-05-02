@@ -1,7 +1,6 @@
 #include "usb_cdc.h"
 #include "ch552.h"
 #include "rgb.h"
-#include "usb.h"
 #include <string.h>
 
 // #include "pn532.h"
@@ -98,30 +97,30 @@ void USB_EP2_OUT_cb(void)
   UEP2_CTRL = UEP2_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
 }
 
-// void USB_EP3_OUT_cb(void)
-// {
-//   CDC2_Rx_Pending = USB_RX_LEN;
-//   CDC2_Rx_CurPos  = 0; // Reset Rx pointer
-//   // Reject packets by replying NAK, until uart_poll() finishes its job, then it informs the USB peripheral to accept incoming packets
-//   UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
-// }
+void USB_EP3_OUT_cb(void)
+{
+  CDC2_Rx_Pending = USB_RX_LEN;
+  CDC2_Rx_CurPos  = 0; // Reset Rx pointer
+  // Reject packets by replying NAK, until uart_poll() finishes its job, then it informs the USB peripheral to accept incoming packets
+  UEP3_CTRL = UEP3_CTRL & ~MASK_UEP_R_RES | UEP_R_RES_NAK;
+}
 
-// void USB_EP3_IN_cb(void)
-// {
-//   UEP3_T_LEN = 0; // 预使用发送长度一定要清空
-//   if (CDC2_Tx_Full)
-//   {
-//     // Send a zero-length-packet(ZLP) to end this transfer
-//     UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // ACK next IN transfer
-//     CDC2_Tx_Full = 0;
-//     // CDC1_Tx_Busy remains set until the next ZLP sent to the host
-//   }
-//   else
-//   {
-//     UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
-//     CDC2_Tx_Busy = 0;
-//   }
-// }
+void USB_EP3_IN_cb(void)
+{
+  UEP3_T_LEN = 0; // 预使用发送长度一定要清空
+  if (CDC2_Tx_Full)
+  {
+    // Send a zero-length-packet(ZLP) to end this transfer
+    UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_ACK; // ACK next IN transfer
+    CDC2_Tx_Full = 0;
+    // CDC1_Tx_Busy remains set until the next ZLP sent to the host
+  }
+  else
+  {
+    UEP3_CTRL    = UEP3_CTRL & ~MASK_UEP_T_RES | UEP_T_RES_NAK;
+    CDC2_Tx_Busy = 0;
+  }
+}
 
 void CDC1_PutChar(uint8_t tdata)
 {
@@ -342,8 +341,8 @@ void ledBoardOnPackect(IO_Packet *reqPacket)
   {
   case CMD_RESET:
     // TODO
-    rgbSet(0, 0x00000000);
-    rgbSet(0, 0x00000000);
+    // rgbSet(0, 0x00000000);
+    // rgbSet(0, 0x00000000);
     isLedDataChanged |= 0x02;
     // rgbPush();
     resPackect->length = 0;
@@ -358,7 +357,7 @@ void ledBoardOnPackect(IO_Packet *reqPacket)
     resPackect->length           = 1;
     break;
   case CMD_EXT_BOARD_SET_LED_RGB_DIRECT:
-    rgbSet(1, ((uint32_t)(reqPacket->response.data[178]) << 16) | ((uint32_t)(reqPacket->response.data[179]) << 8) | (uint32_t)(reqPacket->response.data[180])); // Right
+    rgbSet(1, (uint32_t)(reqPacket->response.data[178]) << 16 | (uint32_t)(reqPacket->response.data[179]) << 8 | (uint32_t)(reqPacket->response.data[180])); // Right
     rgbSet(0, (uint32_t)(reqPacket->response.data[1]) << 16 | (uint32_t)(reqPacket->response.data[2] << 8) | (uint32_t)(reqPacket->response.data[3]));       // Left
     isLedDataChanged |= 0x02;
     // rgbPush();
