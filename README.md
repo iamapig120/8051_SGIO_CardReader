@@ -1,6 +1,6 @@
-# New firmware for SimPad Based on The 8051 Architecture
+# Firmware for SimGEKI (CH552 based)
 
-![License AGPL-3.0](https://img.shields.io/github/license/iamapig120/SimPad_firmware_8051.svg)
+![License AGPL-3.0](https://img.shields.io/github/license/iamapig120/8051_SGIO_CardReader.svg)
 
 The repository for firmware of SimPad devices designed based on the 8051 architecture.
 
