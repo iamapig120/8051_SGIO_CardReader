@@ -192,11 +192,11 @@ void main()
               }
             }
 
-            // dataForUpload->buttons[3] ^= 0x80; // Lside取反
-            // dataForUpload->buttons[1] ^= 0x40; // Rside取反
+            dataForUpload->buttons[3] ^= 0x80; // Lside取反
+            dataForUpload->buttons[1] ^= 0x40; // Rside取反
 
-            dataForUpload->buttons[3] |= 0x80; // Lside block
-            dataForUpload->buttons[1] |= 0x40; // Rside block
+            // dataForUpload->buttons[3] |= 0x80; // Lside block
+            // dataForUpload->buttons[1] |= 0x40; // Rside block
 
             break;
           default:
@@ -214,10 +214,10 @@ void main()
     CDC_UART_Poll();
     CDC_data_check();
     // ADC 重采样
-    if (ADC_START == 0)
-    {
-      ADC_update();
-      ADC_START = 1;
-    }
+    // if (ADC_START == 0)
+    // {
+    //   ADC_update();
+    //   ADC_START = 1;
+    // }
   }
 }

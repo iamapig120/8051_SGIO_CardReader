@@ -65,109 +65,53 @@ void debounceUpdate()
   __debounce_pin(2);
   __debounce_pin(3);
 #elif defined(SEGA_IO_BOARD)
-  // ROW1 = 1;
-  // delay_us(40);
-  // debBuffer[0] <<= 1;
-  // debBuffer[0] |= (COL1 == 0)?1:0;
-  // __debounce_key_without_check(0);
-  // debBuffer[1] <<= 1;
-  // debBuffer[1] |= (COL2 == 0)?1:0;
-  // __debounce_key_without_check(1);
-  // debBuffer[2] <<= 1;
-  // debBuffer[2] |= (COL3 == 0)?1:0;
-  // __debounce_key_without_check(2);
-  // debBuffer[3] <<= 1;
-  // debBuffer[3] |= (COL4 == 0)?1:0;
-  // __debounce_key_without_check(3);
-  // ROW1 = 0;
+  COL1 = 0;
+  debBuffer[0] <<= 1;
+  debBuffer[0] |= COL2;
+  __debounce_key_without_check(0);
+  debBuffer[4] <<= 1;
+  debBuffer[4] |= COL3;
+  __debounce_key_without_check(4);
+  debBuffer[8] <<= 1;
+  debBuffer[8] |= COL4;
+  __debounce_key_without_check(8);
+  COL1 = 1;
 
-  // ROW2 = 1;
-  // delay_us(40);
-  // debBuffer[4] <<= 1;
-  // debBuffer[4] |= (COL1 == 0)?1:0;
-  // __debounce_key_without_check(4);
-  // debBuffer[5] <<= 1;
-  // debBuffer[5] |= (COL2 == 0)?1:0;
-  // __debounce_key_without_check(5);
-  // debBuffer[6] <<= 1;
-  // debBuffer[6] |= (COL3 == 0)?1:0;
-  // __debounce_key_without_check(6);
-  // debBuffer[7] <<= 1;
-  // debBuffer[7] |= (COL4 == 0)?1:0;
-  // __debounce_key_without_check(7);
-  // ROW2 = 0;
-
-  // ROW3 = 1;
-  // delay_us(40);
-  // debBuffer[8] <<= 1;
-  // debBuffer[8] |= (COL1 == 0)?1:0;
-  // __debounce_key_without_check(8);
-  // debBuffer[9] <<= 1;
-  // debBuffer[9] |= (COL2 == 0)?1:0;
-  // __debounce_key_without_check(9);
-  // debBuffer[10] <<= 1;
-  // debBuffer[10] |= (COL3 == 0)?1:0;
-  // __debounce_key_without_check(10);
-  // debBuffer[11] <<= 1;
-  // debBuffer[11] |= (COL4 == 0)?1:0;
-  // __debounce_key_without_check(11);
-  // ROW3 = 0;
-  if (COL2 == 1 && COL3 == 1 && COL4 == 1)
-  {
-    COL1 = 0;
-    debBuffer[0] <<= 1;
-    debBuffer[0] |= COL2;
-    __debounce_key_without_check(0);
-    debBuffer[4] <<= 1;
-    debBuffer[4] |= COL3;
-    __debounce_key_without_check(4);
-    debBuffer[8] <<= 1;
-    debBuffer[8] |= COL4;
-    __debounce_key_without_check(8);
-    COL1 = 1;
-  }
-  if (COL2 == 1 && COL3 == 1 && COL4 == 1)
-  {
-    COL2 = 0;
-    debBuffer[5] <<= 1;
-    debBuffer[5] |= COL3;
-    __debounce_key_without_check(5);
-    debBuffer[9] <<= 1;
-    debBuffer[9] |= COL4;
-    __debounce_key_without_check(9);
-    COL2 = 1;
-  }
-  if (COL2 == 1 && COL3 == 1 && COL4 == 1)
-  {
-    COL3 = 0;
-    debBuffer[2] <<= 1;
-    debBuffer[2] |= COL2;
-    __debounce_key_without_check(2);
-    debBuffer[10] <<= 1;
-    debBuffer[10] |= COL4;
-    __debounce_key_without_check(10);
-    COL3 = 1;
-  }
-  if (COL2 == 1 && COL3 == 1 && COL4 == 1)
-  {
-    COL4 = 0;
-    debBuffer[3] <<= 1;
-    debBuffer[3] |= COL2;
-    __debounce_key_without_check(3);
-    debBuffer[7] <<= 1;
-    debBuffer[7] |= COL3;
-    __debounce_key_without_check(7);
-    COL4 = 1;
-  }
+  COL2 = 0;
   debBuffer[1] <<= 1;
-  debBuffer[1] |= COL2;
+  debBuffer[1] |= COL1;
   __debounce_key_without_check(1);
+  debBuffer[5] <<= 1;
+  debBuffer[5] |= COL3;
+  __debounce_key_without_check(5);
+  debBuffer[9] <<= 1;
+  debBuffer[9] |= COL4;
+  __debounce_key_without_check(9);
+  COL2 = 1;
+
+  COL3 = 0;
+  debBuffer[2] <<= 1;
+  debBuffer[2] |= COL1;
+  __debounce_key_without_check(2);
   debBuffer[6] <<= 1;
-  debBuffer[6] |= COL3;
+  debBuffer[6] |= COL2;
   __debounce_key_without_check(6);
+  debBuffer[10] <<= 1;
+  debBuffer[10] |= COL4;
+  __debounce_key_without_check(10);
+  COL3 = 1;
+
+  COL4 = 0;
+  debBuffer[3] <<= 1;
+  debBuffer[3] |= COL1;
+  __debounce_key_without_check(3);
+  debBuffer[7] <<= 1;
+  debBuffer[7] |= COL2;
+  __debounce_key_without_check(7);
   debBuffer[11] <<= 1;
-  debBuffer[11] |= COL4;
+  debBuffer[11] |= COL3;
   __debounce_key_without_check(11);
+  COL4 = 1;
 
 #endif
 #endif

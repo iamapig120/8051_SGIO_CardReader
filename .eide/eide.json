@@ -13,7 +13,7 @@
     "lastTelTime": 1610609776058,
     "lastBuildTime": 1610940059942
   },
-  "version": "3.3",
+  "version": "3.4",
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
@@ -42,7 +42,6 @@
         "name": "default",
         "incList": [],
         "libList": [],
-        "sourceDirList": [],
         "defineList": [
           "FREQ_SYS=24000000"
         ]
